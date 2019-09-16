@@ -1,0 +1,294 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Conway!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>Hangyaszimulációk</title>
+        <para>
+            Írj Qt C++-ban egy hangyaszimulációs programot, a forrásaidról utólag reverse engineering jelleggel
+            készíts UML osztálydiagramot is!
+        </para>
+        <para>
+            Megoldás videó: <link xlink:href="https://bhaxor.blog.hu/2018/10/10/myrmecologist">https://bhaxor.blog.hu/2018/10/10/myrmecologist</link>
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href="https://sourceforge.net/p/udprog/code/ci/master/tree/source/kozepes/Qt/sejtautomata/">https://sourceforge.net/p/udprog/code/ci/master/tree/source/kozepes/Qt/sejtautomata/</link>               
+        </para>
+        <para>
+            Ez a program a hangyák viselkedését próbálja meg szimulálni, ahogyan nyomot hagynak maguk után a társaik számára. 
+        </para>
+        <para>
+            A hangya tulajdonságát az Ant osztály tartalmazza: 
+        </para>
+        <para>
+            - x és y változók - a hangya oszlopa és sora;
+        </para>            
+        <para>
+            - dir(direction) - a hangya mozgásiránya
+        </para>
+        <para>Ezek alapján egy hangyáról egyértelműen meghatározható, hogy hol van és merre halad.</para>
+        <para>Az AntWin osztály a cellák méretét(pixelekben), rács számát (int**) és a hangyák tulajdonságait tartalmazza. A hangyák tulajdonságai publikusak, tehát más osztályokból is elérhetőek. A keyPress() függvény célja, hogy a 'P' lenyomásakor a program, így a hangyák is megálljanak. Ezt egy a running() függvényben található boolean típusú változó értékének változtatásával éri el.</para>
+        <para>
+            Osztálydiagramm: <link xlink:href="https://github.com/mesterakos963/Prog1/blob/master/diagramm.png">https://github.com/mesterakos963/Prog1/blob/master/diagramm.png</link>
+        </para>
+    </section>        
+    <section>
+        <title>Java életjáték</title>
+        <para>
+            Írd meg Java-ban a John Horton Conway-féle életjátékot, 
+            valósítsa meg a sikló-kilövőt!
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href=""></link>               
+        </para>
+        <para>
+            Tanulságok, tapasztalatok, magyarázat...
+        </para>            
+    </section>        
+    <section>
+        <title>Qt C++ életjáték</title>
+        <para>
+            Erre a feladatra elhasználnám egy, az SMNIST-ért kapott passzolási lehetőségemet.
+        </para>
+        <para>
+            Most Qt C++-ban!
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <programlisting language="c++">
+<![CDATA[
+        #include <iostream>
+#include <cstdlib>
+#include <unistd.h>
+#include <fstream>
+#include <string>
+#include <sstream>
+
+using namespace std;
+
+const int gridSize = 25;
+void printGrid(bool gridOne[gridSize+1][gridSize+1]);
+void determineState(bool gridOne[gridSize+1][gridSize+1]);
+void clearScreen(void);
+
+int main(){
+
+    system( "color A" );
+    bool gridOne[gridSize+1][gridSize+1] = {};
+    int x,y,n;
+    string nc;
+    string start;
+    string filename;
+    cout << "                         THE GAME OF life - Implementation in C++" << endl;
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    cout << "Also known simply as life, " << endl;
+    cout << "is a cellular automaton devised by the British mathematician John Horton Conway in 1970." << endl;
+    cout << endl;
+    cout << "Rules" << endl;
+    cout << "The universe of the Game of life is an infinite two-dimensional orthogonal grid of square cells," << endl;
+    cout << "each of which is in one of two possible states, life or dead. Every" << endl;
+    cout << "cell interacts with its eight neighbours, which are the cells that are horizontally, vertically, or diagonally adjacent." << endl;
+    cout << "At each step in time, the following transitions occur:" << endl;
+    cout << "1. Any live cell with fewer than two live neighbours dies, as if caused by under-population." << endl;
+    cout << "2. Any live cell with two or three live neighbours lives on to the next generation." << endl;
+    cout << "3. Any live cell with more than three live neighbours dies, as if by over-population." << endl;
+    cout << "4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction." << endl;
+    cout << endl;
+    cout << "O - living cell" << endl;
+    cout << ". - dead cell" << endl;
+    cout << endl;
+    cout << "Enter the number of cells, or 'r' to read cells from file: ";
+    cin >> nc;
+    cout << endl;
+
+    if ( nc == "r" )
+      {
+	while (true)
+	  {
+	    
+	    cout << "Enter name of file to read from: "<<endl;
+	    cin  >> filename;
+	    
+	    ifstream readfile(filename);
+	    if ( readfile.is_open() )
+	      {
+		string fileline,xx,yy;
+
+		while (getline(readfile,fileline))
+		  {
+		    stringstream ss(fileline);
+		    
+		    getline(ss,xx,' ');
+		    getline(ss,yy,' ');
+
+		    x = stoi(xx);
+		    y = stoi(yy);
+
+		    gridOne[x][y] = true;
+		  }
+		break;
+	      } else {
+	      cout << "No such file, try again." << endl;
+	    }
+	  }
+      }
+    else
+      {
+	
+	for(int i=0;i<stoi(nc);i++)
+	  {
+	    cout <<stoi(nc)<< "Enter the coordinates of cell " << i+1 << " : ";
+	    cin >> x >> y;
+	    gridOne[x][y] = true;
+	    printGrid(gridOne);
+	  }
+      }
+    cout << "Grid setup is done. Start the game ? (y/n)" << endl;
+    printGrid(gridOne);
+    cin >> start;
+    if( start == "y" || start == "Y" )
+      {
+        while (true)
+	  {
+            printGrid(gridOne);
+            determineState(gridOne);
+            usleep(200000);
+            clearScreen();
+	  }
+      }
+    else
+      {
+        return 0;
+      }   
+}
+
+void clearScreen(void) {
+    // Tested and working on Ubuntu and Cygwin
+    #if defined(_WIN32) || defined(WIN32) || defined(__MINGW32__) || defined(__BORLANDC__)
+        #define OS_WIN
+    #endif
+  
+    #ifdef OS_WIN
+        system("CLS");
+    #endif
+
+    #if defined(linux) || defined(__CYGWIN__)
+        system("clear");
+    #endif
+}
+
+void printGrid(bool gridOne[gridSize+1][gridSize+1]){
+    for(int a = 1; a < gridSize; a++)
+        {
+        for(int b = 1; b < gridSize; b++)
+        {
+            if(gridOne[a][b] == true)
+            {
+                cout << " O ";
+            }
+            else
+            {
+                cout << " . ";
+            }
+            if(b == gridSize-1)
+            {
+                cout << endl;
+            }
+        }
+    }
+}
+
+void compareGrid (bool gridOne[gridSize+1][gridSize+1], bool gridTwo[gridSize+1][gridSize+1]){
+    for(int a =0; a < gridSize; a++)
+    {
+        for(int b = 0; b < gridSize; b++)
+        {
+                gridTwo[a][b] = gridOne[a][b];
+        }
+    }
+}
+
+void determineState(bool gridOne[gridSize+1][gridSize+1]){
+    bool gridTwo[gridSize+1][gridSize+1] = {};
+    compareGrid(gridOne, gridTwo);
+
+    for(int a = 1; a < gridSize; a++)
+    {
+        for(int b = 1; b < gridSize; b++)
+        {
+            int alive = 0;
+            for(int c = -1; c < 2; c++)
+            {
+                for(int d = -1; d < 2; d++)
+                {
+                    if(!(c == 0 && d == 0))
+                    {
+                        if(gridTwo[a+c][b+d])
+				{
+					++alive;
+				}
+                    }
+                }
+            }
+            if(alive < 2)
+            {
+                gridOne[a][b] = false;
+            }
+            else if(alive == 3)
+            {
+                gridOne[a][b] = true;
+            }
+            else if(alive > 3)
+            {
+                gridOne[a][b] = false;
+            }
+        }
+    }
+}
+]]>
+</programlisting>
+        <para>
+            Conway életjátékának szabályai:
+        </para>         
+        <para>
+            - minden cella, amelyiknek nincs szomszédja vagy csak 1 szomszédja van meghal (magányában)
+        </para> 
+        <para>
+            - minden 4 vagy több szomszéddal rendelkező cella meghal (túlnépesedésben)
+        </para>  
+        <para>
+            - a 2 vagy 3 szomszéddal rendelkező cellák életben maradnak
+        </para>
+        <para>
+            Ez a játék, nem egy tipikus számítógépes játék. Kitalálója a Cambridge-i egyetem matematikusa, John Conway. 1970-ben vált ismertté, amikor a Scientific America című újság publikált egy cikket róla. Matematikai szempontból a selytautómaták közé tartozik. A játékos feladata csupán annyi, hogy megad egy kezdőalakzatot, a végkimenetel ettől az alakzattól függ.
+        </para>
+        <para>
+        <link xlink:href="https://github.com/mesterakos963/Prog1/blob/master/lifegame.png">https://github.com/mesterakos963/Prog1/blob/master/lifegame.png</link>
+        </para>
+    </section>        
+    <section>
+        <title>BrainB Benchmark</title>
+        <para>
+            Ezért a feladatért kaptam egy behúzást, nem volt kész határidőre.
+        </para>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href="https://github.com/nbatfai/esport-talent-search">https://github.com/nbatfai/esport-talent-search</link>               
+        </para>
+        <para>
+            A program céja, hogy a felhasználóról megmondja, hogy mennyire lehet sikeres Esportoló. A futáshoz szükséges OpenCV szükséges.
+        </para>            
+    </section>        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                

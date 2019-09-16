@@ -1,0 +1,27 @@
+<authorgroup xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <author>
+        <personname>
+            <surname>Mester</surname>
+            <firstname>Ákos</firstname>        
+        </personname>    
+        <affiliation>
+            <shortaffil>Egyetemi hallgató, DE.</shortaffil>
+            <jobtitle>Hallgató</jobtitle>
+            <orgname>Debreceni Egyetem</orgname>
+            <orgdiv>Programtervező Informatikus</orgdiv>
+            <address>
+                <email>akos.mester9@gmail.com</email>
+            </address>
+        </affiliation>
+        <address>
+            <street>Kassai út 26.</street>
+            <city>Debrecen</city>
+            <postcode>4028</postcode>
+            <country>Magyarország</country>
+            <email>akos.mester9@gmail.com</email>
+            <otheraddr>
+                <link xlink:href="https://github.com/mesterakos963?tab=repositories">https://github.com/mesterakos963?tab=repositories</link>
+            </otheraddr>
+        </address>
+    </author>    
+</authorgroup>

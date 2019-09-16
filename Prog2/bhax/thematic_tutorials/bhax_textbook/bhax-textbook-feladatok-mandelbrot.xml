@@ -1,0 +1,389 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Mandelbrot!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>A Mandelbrot halmaz</title>
+        <para>
+                
+        </para>
+        <para>
+            Megoldás videó:
+        </para>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>
+            Program forráskódja:              
+        </para>
+        <programlisting language="c++">
+<![CDATA[
+#include <png++/png.hpp>
+
+#define N 500
+#define M 500
+#define MAXX 0.7
+#define MINX -2.0
+#define MAXY 1.35
+#define MINY -1.35
+
+void GeneratePNG( int tomb[N][M])
+{
+    png::image< png::rgb_pixel > image(N, M);
+    for (int x = 0; x < N; x++)
+    {
+        for (int y = 0; y < M; y++)
+        {
+            image[x][y] = png::rgb_pixel(tomb[x][y], tomb[x][y], tomb[x][y]);
+        }
+    }
+    image.write("kimenet.png");
+}
+
+struct Komplex
+{
+    double re, im;
+};
+
+int main()
+{
+    int tomb[N][M];
+
+    int i, j, k;
+
+    double dx = (MAXX - MINX) / N;
+    double dy = (MAXY - MINY) / M;
+
+    struct Komplex C, Z, Zuj;
+
+    int iteracio;
+
+    for (i = 0; i < M; i++)
+    {
+        for (j = 0; j < N; j++)
+        {
+            C.re = MINX + j * dx;
+            C.im = MAXY - i * dy;
+
+            Z.re = 0;
+            Z.im = 0;
+            iteracio = 0;
+
+            while(Z.re * Z.re + Z.im * Z.im < 4 && iteracio++ < 255)
+            {
+                Zuj.re = Z.re * Z.re - Z.im * Z.im + C.re;
+                Zuj.im = 2 * Z.re * Z.im + C.im;
+                Z.re = Zuj.re;
+                Z.im = Zuj.im;
+            }
+
+            tomb[i][j] = 256 - iteracio;
+        }
+    }
+
+    GeneratePNG(tomb);
+
+    return 0;
+}
+]]>
+</programlisting>
+<para>
+    Make file
+</para>
+<programlisting language="c++">
+<![CDATA[
+all: mandelbrot clean
+
+mandelbrot.o: mandelbrot.cpp
+	@g++ -c mandelbrot.cpp `libpng-config --cflags`
+
+mandelbrot: mandelbrot.o
+	@g++ -o mandelbrot mandelbrot.o `libpng-config --ldflags`
+
+clean:
+	@rm -rf *.o
+	@./mandelbrot
+	@rm -rf mandelbrot
+        ]]>
+</programlisting>
+<para>
+    A Mandelbrot halmaz egy olyan komplex halmaz, amely illeszkedik a
+			<inlineequation>
+				<alt role="tex">f_c(z) = z^2 + c</alt>
+				<mathphrase/>
+			</inlineequation>
+			függvény képére, s nullától iterálva nem divergál, tehát a
+			<inlineequation>
+				<alt role="tex">f_c(0), f_c(f_c(0)), ...</alt>
+				<mathphrase/>
+			</inlineequation>
+			abszolútértekben korlátos. A program alapjául a png++ könyvtár szolgál. Ebben a feladatban nem használjuk az std::complex osztályt, hanem magunknak hozunk létre egy struktúrát, ami tartalmazza az imaginárius és képzetes egységet, amiket double változókban tárolunk. Ezután megadunk egy halmazt, amire az egyenletünk illeszkedik és az ennek megfelelő pixeleket kiszínezzük.
+</para>
+<para>
+    <function>GeneratePNG</function> függvény felelős a kimeneti png létrehozásáért.
+</para>
+<para>
+    A kimenet ezen a linken található: <link xlink:href="https://github.com/mesterakos963/Prog1/blob/master/mandelbrot.png">https://github.com/mesterakos963/Prog1/blob/master/mandelbrot.png</link>
+</para>
+    </section>        
+        
+    <section>
+        <title>A Mandelbrot halmaz a <filename>std::complex</filename> osztállyal</title>
+        <para>
+                
+        </para>
+        <programlisting language="c++">
+<![CDATA[
+        #include <png++/png.hpp>
+#include <complex>
+
+const int N = 500;
+const int M = 500;
+const double MAXX = 0.7;
+const double MINX = -2.0;
+const double MAXY = 1.35;
+const double MINY = -1.35;
+
+void GeneratePNG(const int tomb[N][M])
+{
+    png::image< png::rgb_pixel > image(N, M);
+    for (int x = 0; x < N; x++)
+    {
+        for (int y = 0; y < M; y++)
+        {
+            image[x][y] = png::rgb_pixel(tomb[x][y], tomb[x][y], tomb[x][y]);
+        }
+    }
+    image.write("kimenet.png");
+}
+
+int main()
+{
+    int tomb[N][M];
+
+    double dx = ((MAXX - MINX) / N);
+    double dy = ((MAXY - MINY) / M);
+
+    std::complex<double> C, Z, Zuj;
+
+    int iteracio;
+
+    for (int i = 0; i < M; i++)
+    {
+        for (int j = 0; j < N; j++)
+        {
+			C = {MINX + j * dx , MAXY - i * dy};
+
+            Z = 0;
+            iteracio = 0;
+
+            while(abs(Z) < 2 && iteracio++ < 255)
+            {
+                Zuj = Z*Z+C;
+                Z = Zuj;
+            }
+
+            tomb[i][j] = 256 - iteracio;
+        }
+    }
+
+    GeneratePNG(tomb);
+
+    return 0;
+}
+]]>
+</programlisting>
+        <para>
+            A program az előző feladatnak egy elegánsabb megoldása. Itt használjuk az std::complex osztályt, ami ad némi előnyt, de a végeredmény ugyanaz a kimenet lesz. Működési elve szintén annyi, hogy a Mandelbrot halmaznak megfeleő pixeleket kiszínezi. 
+        </para>
+        <para>
+            Az std::complex osztállyal könnyedén reprezentálhatunk számokat a komplex számok halmazáról. Az osztályon belül sok előre deklarált változónak adhatunk értéket. PL: <function>real</function> - valós rész, <function>imag</function> - imaginárius rész, <function>abs</function> - komplex szám abszolút értéke, <function>conj</function> komplex szám konjugáltja. Az osztály használata a végeredményen nem változtat, csupán egy eszköz, ami megkönnyíti a programírást.
+        </para>
+    </section>        
+                
+    <section>
+        <title>Biomorfok</title>
+        <para>
+            Megoldás videó: <link xlink:href="https://youtu.be/IJMbgRzY76E">https://youtu.be/IJMbgRzY76E</link>
+        </para>
+        <para>
+            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf</link>
+        </para>
+        <para>
+            A biomorfok szoros kapcsolatban állnak a Mandelbrot halmazzal. Itt is létrehozunk egy make file-t és futtatjuk a programot, ami létrehoz egy bmorf.png képet az előzőhöz hasonló módon, de mivel az egyenletünk más ebből egyértelműen következik, hogy a kapott ábra is másogy fog kinézni. A formán kívül azonban az is szembeötlik, hogy ez az ábra már színes. Ezt úgy kapjuk meg, hogy az iteráció számát elosztjuk 255-tel, így RGB színezést kapunk.
+        </para>
+        <para>Kimenet: <link xlink:href="https://github.com/mesterakos963/Prog1/blob/master/bmorf.png">https://github.com/mesterakos963/Prog1/blob/master/bmorf.png</link></para>                        
+    </section>                     
+
+    <section>
+        <title>A Mandelbrot halmaz CUDA megvalósítása</title>
+        <para>
+            Megoldás videó: 
+        </para>
+        <para>
+            Megoldás forrása:  
+        </para>
+    </section>                     
+
+    <section>
+        <title>Mandelbrot nagyító és utazó C++ nyelven</title>
+        <para>
+            Építs GUI-t a Mandelbrot algoritmusra, lehessen egérrel nagyítani egy területet, illetve egy pontot
+            egérrel kiválasztva vizualizálja onnan a komplex iteréció bejárta z<subscript>n</subscript> komplex számokat!
+        </para>  
+        <para>
+            Megoldás forrása:  
+        </para>
+        <programlisting language="c++">
+<![CDATA[
+        // frakablak.cpp
+//
+// Mandelbrot halmaz nagyító
+
+#include "frakablak.h"
+
+FrakAblak::FrakAblak(double a, double b, double c, double d,
+                     int szelesseg, int iteraciosHatar, QWidget *parent)
+                         : QMainWindow(parent)
+{
+    setWindowTitle("Mandelbrot halmaz");
+
+    szamitasFut = true;
+    x = y = mx = my = 0;
+    this->a = a;
+    this->b = b;
+    this->c = c;
+    this->d = d;
+    this->szelesseg = szelesseg;
+    this->iteraciosHatar = iteraciosHatar;
+    magassag = (int)(szelesseg * ((d-c)/(b-a)));
+
+    setFixedSize(QSize(szelesseg, magassag));
+    fraktal= new QImage(szelesseg, magassag, QImage::Format_RGB32);
+
+    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+    mandelbrot->start();
+}
+
+FrakAblak::~FrakAblak()
+{
+    delete fraktal;
+    delete mandelbrot;
+}
+
+void FrakAblak::paintEvent(QPaintEvent*) {
+    QPainter qpainter(this);
+    qpainter.drawImage(0, 0, *fraktal);
+    if(!szamitasFut) {
+        qpainter.setPen(QPen(Qt::white, 1));
+        qpainter.drawRect(x, y, mx, my);
+
+    }
+    qpainter.end();
+}
+
+void FrakAblak::mousePressEvent(QMouseEvent* event) {
+
+    // A nagyítandó kijelölt területet bal felsõ sarka:
+    x = event->x();
+    y = event->y();
+    mx = 0;
+    my = 0;
+
+    update();
+}
+
+void FrakAblak::mouseMoveEvent(QMouseEvent* event) {
+
+    // A nagyítandó kijelölt terület szélessége és magassága:
+    mx = event->x() - x;
+    my = mx; // négyzet alakú
+
+    update();
+}
+
+void FrakAblak::mouseReleaseEvent(QMouseEvent* event) {
+
+    if(szamitasFut)
+        return;
+
+    szamitasFut = true;
+
+    double dx = (b-a)/szelesseg;
+    double dy = (d-c)/magassag;
+
+    double a = this->a+x*dx;
+    double b = this->a+x*dx+mx*dx;
+    double c = this->d-y*dy-my*dy;
+    double d = this->d-y*dy;
+
+    this->a = a;
+    this->b = b;
+    this->c = c;
+    this->d = d;
+
+    delete mandelbrot;
+    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+    mandelbrot->start();
+
+    update();
+}
+
+void FrakAblak::keyPressEvent(QKeyEvent *event)
+{
+
+    if(szamitasFut)
+        return;
+
+    if (event->key() == Qt::Key_N)
+        iteraciosHatar *= 2;
+    szamitasFut = true;
+
+    delete mandelbrot;
+    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
+    mandelbrot->start();
+
+}
+
+
+void FrakAblak::vissza(int magassag, int *sor, int meret)
+{
+    for(int i=0; i<meret; ++i) {
+        QRgb szin = qRgb(0, 255-sor[i], 0);
+        fraktal->setPixel(i, magassag, szin);
+    }
+    update();
+}
+
+void FrakAblak::vissza(void)
+{
+    szamitasFut = false;
+    x = y = mx = my = 0;
+}
+]]>
+</programlisting>
+<para>
+    Ehhez a feladathoz a QT Creator nevű progamot használjuk, mely egy multiplatform GUI építő szoftver.
+</para>
+        <para>
+            A már meglévő Mandelbrot-halmaz kódhoz építünk felhasználói felületet. Használatához kijelöljük az újragenerálandó területet, ezzel érjük el a nagyítást.
+        </para>
+        <para>
+            A szükséges kiegészítő kódok itt találhatóak: <link xlink:href="https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/">https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/</link>
+        </para>
+    </section>                     
+                                                                                                                                                                               
+    <section>
+        <title>Mandelbrot nagyító és utazó Java nyelven</title>
+        <para>
+            Ehhez a feladathoz az OpenJFX 11 nevű szoftvert használni, ami a QT-hoz hasonló GUI építő szoftver.  
+        </para>
+        <para>
+            A Mandelbrot nagyító és utazó JAVA nyelvű megvalósítása itt található: <link xlink:href="https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/">https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/</link>
+        </para>
+    </section>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
