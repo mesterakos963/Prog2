@@ -1,0 +1,171 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Liskov!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+
+    <section>
+        <title>Liskov helyettesítés sértése</title>
+        <para>Megoldás forrása:</para>
+        <para>Java: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/Liskov.java"
+            /></para>
+        <para>C++: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/Liskov.cpp"
+            /></para>
+        <para>A feladat azt kérte tőlünk, hogy írjunk olyan leforduló Java ill. C++ kódot, ami sérti
+            a Liskov elvet, ami a következőt jelenti: ha A altípusa B-nek, akkor minden olyan helyen
+            ahol A-t felhasználjuk B-t is minden gond nélkül behelyettesíthetjük anélkül, hogy a
+            programrész tulajdonságai megváltoznának.</para>
+        <para>A mi esetünkben A a Teglalap, míg B a Negyzet osztállyal egyezik meg, a Negyzet
+            gyermeke a Teglalap osztálynak. A Teglalap osztály tartalmazza a magasság és szelesség
+            értékeket és ez alapján könnyen kiszámolhatjuk a területet, ami adott esetben 5*10=50
+            lenne. A Negyzet osztály is tartalmazza a saját értékeit, de a négyzet tulajdonságát -
+            miszerint minden oldala egyforma - szemelőtt tartva, a magasságot a szélességgel tesszük
+            egyenlővé. A Liskov elv szerint ha A-t behelyettesíthetjük, akkor B-t is, mivel B
+            gyermeke A-nak. Ebből kiindulva példányosításnál nem egy téglalapot példányosítunk,
+            hanem egy négyzetet. </para>
+        <para>A programot futtatva nem a várt 5*10=50 értéket kapjuk, hanem 100-at. Ennek oka, hogy
+            Negyzet objektumban a magasságot egyenlősítettük a szélességgel, ami egy téglalap
+            esetében nem igaz. Ez a hiba könnyen kiküszöbölhető lenne, ha szem előtt tartanánk a
+            Liskov elvet.</para>
+    </section>
+    <section>
+        <title>Szülő-gyerek</title>
+        <para>Megoldás forrása:</para>
+        <para>Java:<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/szulo.java"
+            /></para>
+        <para>C++:<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/szulogyerek.cpp"
+            /></para>
+        <para>Ebben a feladatban az volt a cél, hogy írjunk olyan Java ill. C++ kódot, ami rávilágít
+            arra, hogy az ősön keresztül csak az ős üzenetei érhetők el. Tehát ha definiálunk egy
+            függvényt az altípusban és az altípust szupertípusként használjuk, akkor a saját
+            függvényei nem lesznek elérhetőek.</para>
+        <para>Futtatás után az alábbi hibaüzenetet kapjuk Java-ban:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/szulogyerekjava.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>És C++-ban:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/szulogyerekcpp.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Szülőn keresztül nem hívhatunk meg olyan metódust, amit a gyermek igen, a szülő
+            viszont nem definiált. Ez a dinamikus kötésnek tudható be, ami azt jelenti, hogy futási
+            időben rendeli hozzá a metódust az objektumhoz.</para>
+    </section>
+    <section>
+        <title>Ciklomatikus komplexitás</title>
+        <para>Feladat azt kérte tőlünk, hogy számoljuk ki egy tetszőleges program ciklomatikus
+            komplexitását. Ezt megtehettük képlet alapján vagy valamilyen program
+            segítségével.</para>
+        <para>De kezdjük ott, hogy mit is jelent a ciklmatikus komplexitás.</para>
+        <para>Egy szoftver metrika, másnéven McCabe-komplexitásnak is nevezik. A gráfelméletre
+            alapul, a forráskódban az elágazó gráfok pontjai és a köztük lévő élek száma alapján
+            számítható ki. A végeredmény egy pozitív egész szám lesz.</para>
+        <para>A képlet:</para>
+        <para>M=E-N+2P, ahol: M - ciklomatikus komplexitás, E-gráf éleinek száma, N-gráfban lévő
+            csúcsok száma, P-összefüggő komponensek száma.</para>
+        <para>Az általam választott program, a már elég jól ismert binfa program, mivel ez egy elég
+            összetett algoritmus, így a végeredménynek is egy elég nagy szám várható. Viszont egy
+            ilyen kód esetében ezt képlettel kiszámolni elég hosszas lenne, valamint nagyon nagy a
+            hibalehetőség, ezért én egy online kalkulátor segítségével számoltam ezt ki.</para>
+        <para><link xlink:href="http://www.lizard.ws/"/></para>
+        <para>Az eredmény a következő lett:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/ciklomatikus.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Ahogy látszik ez az kalkulátor egy elég részletes eredményt ad vissza.</para>
+    </section>
+    <section>
+        <title>Anti OO</title>
+        <para>A feladat azt kérte tőlünk, hogy BBP algoritmussal 7 a Pi hexadecimális kifejtésének a
+            0. pozíciótól számított 10^6, 107^, 10^8 darab jegyét határozzuk meg C, C++, Java és C#
+            nyelveken és hasonlítsuk össze a futási idejüket.</para>
+        <para>Mivel az algoritmus a "Kódolás from scratch" nevű feladatunkból származik, ezért most
+            nem ejtek szót a forrásról. Ebben a feladatban inkább a végeredmény a fonots, amit egy
+            táblázatba foglaltam.</para>
+        <para>Forrásfájlok:</para>
+        <para>Java:<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/PiBBPBench.java"
+            /></para>
+        <para>C:<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/pi_bbp_bench.c"
+            /></para>
+        <para>C++:<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/pibbpbench.cpp"
+            /></para>
+        <para>C#:<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/PiBBPBench.cs"
+            /></para>
+        <para>Az eredményeket tartalmazó táblázat:<table frame="all">
+                <title/>
+                <tgroup cols="5">
+                    <colspec colname="c1" colnum="1" colwidth="1*"/>
+                    <colspec colname="c2" colnum="2" colwidth="1*"/>
+                    <colspec colname="c3" colnum="3" colwidth="1*"/>
+                    <colspec colname="c4" colnum="4" colwidth="1*"/>
+                    <colspec colname="c5" colnum="5" colwidth="1*"/>
+                    <thead>
+                        <row>
+                            <entry/>
+                            <entry>Java</entry>
+                            <entry>C</entry>
+                            <entry>C++</entry>
+                            <entry>C#</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>10^6</entry>
+                            <entry>2,001</entry>
+                            <entry/>
+                            <entry>2,54988</entry>
+                            <entry>2,040878</entry>
+                        </row>
+                        <row>
+                            <entry>10^7</entry>
+                            <entry>23,5</entry>
+                            <entry/>
+                            <entry>29,682</entry>
+                            <entry>23,749305</entry>
+                        </row>
+                        <row>
+                            <entry>10^8</entry>
+                            <entry>268,231</entry>
+                            <entry/>
+                            <entry>336,813</entry>
+                            <entry>273,46592</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table></para>
+        <para>Java:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/java.png"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>C++:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/cpp.png"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>C#:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/cs.png"/>
+                </imageobject>
+            </inlinemediaobject></para>
+    </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+</chapter>                
