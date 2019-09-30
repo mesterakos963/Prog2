@@ -26,7 +26,7 @@ szulo s = new gyerek();
 s.setNev("Anya");
 s.setKor(60);
 gyerek gy = new gyerek();
-s.setNev("David");
+s.setNev("Maria");
 s.setKor(15);
 System.out.println(gy.getNev() + " " + s.getNev());
 }
