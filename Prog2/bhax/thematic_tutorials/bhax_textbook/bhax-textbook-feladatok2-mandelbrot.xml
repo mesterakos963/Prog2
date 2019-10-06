@@ -1,0 +1,164 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Mandelbrot!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+
+    <section>
+        <title>Reverse engineering UML osztálydiagram</title>
+        <para>A feladat azt kérte tőlünk, hogy generáljunk UML osztálydiagramot az első védési
+            feladat, a Binfa C++ kódjához és mutassunk rá a kompozíció és az aggregáció kapcsolatára
+            a forráskódban és a diagramon. A diagramot a forrásból generáljuk.</para>
+        <para>A program forrása: <link
+                xlink:href="https://sourceforge.net/p/udprog/code/ci/master/tree/source/vedes/elso/z3a7.cpp"
+            /></para>
+        <para>Az UML-t Visual Paradigm online változatában hoztam létre, amit lentebb linkeltem. Ez
+            egy egyszerű program, könnyű használni, valamint online verzióról van szó, tehát nem
+            kellett semmit sem letölteni.</para>
+        <para>VP online: <link
+                xlink:href="https://diagrams.visual-paradigm.com/#proj=0%26type=ClassDiagram"
+            /></para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/uml.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Az aggregáció olyan asszociáció, amely tartalmazást jelöl, jele egy üres rombusz. Ha a
+            rombusz nem üres, akkor az az asszociációt fogja jelölni. Kompozíció esetében a
+            tartalmazott objektum nem osztható meg, a tartalmazó és a tartalmazott egyszerre jön
+            létre és egyszerre is szűnik meg. A mi esetünkben ez a kódban ez a gyökér elem.
+            <programlisting>Csomopont gyoker;</programlisting></para>
+    </section>
+    <section>
+        <title>Forward engineering UML osztálydiagram</title>
+        <para>Az előző feladattal ellentétben, ahol a kódból kellett létrehozni az osztálydiagramot,
+            itt a diagramból kell generálni a kódot. Ez hasznos lehet, mivel így kigondlhatjuk az
+            osztályok szerkezetét, jobban a szemünk elé tárul azok felépítése, ezalapján már könnyen
+            lehet belőle forrást generálni.</para>
+        <para>Az előző feladatban létrehozott UML diagram segítéségével legeneráltam a Binfa program
+            forrását és a következőt
+            kaptam:<programlisting>class LZWBinFa {
+
+protected:
+    Csomopont gyoker;
+private:
+    Csomopont* fa;
+    int melyseg;
+    int atlagosszeg;
+    int atlagdb;
+    double szorasosszeg;
+protected:
+    int maxMelyseg;
+    double atlag;
+    double szoras;
+
+public:
+    LZWBinFa();
+
+    void ~LZWBinFa();
+
+    LZWBinFa(const LZWBinFa&amp; regi);
+
+    LZWBinFa(LZWBinFa&amp;&amp; regi);
+
+    void kiir();
+
+    int getMelyseg();
+
+    double getAtlag();
+
+    double getSzoras();
+
+    void kiir(std::ostream&amp; os);
+
+private:
+    void kiir(Csomopont* elem, std::ostream&amp; os);
+
+    void szabadit(Csomopont* elem);
+
+    Csomopont* masol(Csomopont* elem, Csomopont* regifa);
+
+protected:
+    void rmelyseg(Csomopont* elem);
+
+    void ratlag(Csomopont* elem);
+
+    void rszoras(Csomopont* elem);
+};
+
+class Csomopont {
+
+private:
+    char betu;
+    Csomopont* balNulla;
+    Csomopont* jobbEgy;
+
+public:
+    Csomopont(char b = ’/’);
+    void ~Csomopont();
+
+    Csomopont* nullasGyermek();
+
+    Csomopont* egyesGyermek();
+
+    void ujNullasGyermek(Csomopont* gy);
+
+    void ujEgyesGyermek(Csomopont* gy);
+
+    char getBetu();
+
+private:
+    Csomopont(const Csomopont&amp; unnamed_1);
+};</programlisting></para>
+        <para>Ami legelőször szembeötlik az az, hogy ugyan a felépítése megvnan a programnak, az
+            osztályok és metódusok fejrészei létrejöttek, azonban ezek teljesen üresek. Ez teljesen
+            nyilvánvaló, hiszen az UML diagram nem tartalmazza a metódusok implementációját. Ez a 2
+            feladat csupán szemlélteti, hogy UML diagram nélkül is lehet programozni valamint annak,
+            akinek szüksége van arra, hogy lássa a program felépítését, annak ez egy nagyon jó
+            eszköz.</para>
+    </section>
+    <section>
+        <title>BPMN</title>
+        <para>A feladat azt kérte tőlünk, hogy egy hétköznapi tevékenységhez rajzoljunk BPMN ábrát.
+            A BPMN(Business Process Model and Notation) egy grafikai reprezentáció üzleti folyamatok
+            számára.</para>
+        <para>A feladatot ismét a Visual Paradigm online verziójában végeztem és egy online
+            vásárlást modelleztem vele.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/bpmn.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Az ábrán egy online rendelés folyamatát szemlélteti a webáruház szemszögéből. A
+            beérkező rendelést rögzíti, aztán ellenőrzi, hogy van-e készleten az adott termék. Ha
+            nincs, akkor alternatívát ajánl a vásárlónak, ha viszont van, akkor a kérést továbbítja
+            a raktárnak, ahogy megkezdődik a termék csomagolása, majd kézbesítése. Ez egy nagyon
+            egyszerű kis példa, amit lehetne tovább folytatni egészen az átvételig vagy kibővíteni
+            vevő oldali résszel.</para>
+        <section>
+            <title>Egy esettan</title>
+            <para>Feladatunk BME C++ könyv 14. fejezetének feldolgozása volt.</para>
+            <para>Ez az esettanulámy az UML készítés előnyeire próbál rávilágítani.  A feladatunk,
+                hogy írjunk egy programot egy szamítógép alkatrészekkel foglalkozó cégnek. A
+                programnak nyilván kell tartania az alkatrészeket és konfigurációkat, továbbá
+                egyszerűen kiegészíthetőnek kell lennie a jövőben. A megoldást ebben az esetben egy
+                C++ könyvtár jelentette, mivel így a forráskód kiadása nélkül is felhasználható. A
+                termékeket reprezentáló osztályban van egy vektor, ami a terméket és annak
+                alkatrészeit tárolja, amik szintén a termék osztály példányai. Az UML
+                osztálydiagramot elkészítettem a már korábban is használt Visual Paradigm online
+                veriójában.</para>
+            <para><inlinemediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/esettan.jpg"/>
+                    </imageobject>
+                </inlinemediaobject></para>
+            <para>Az ábra a könyvbeli példát reprezentálja.</para>
+            <para>A program egyszerű felépítésű szövegfájlokból képes beolvasni adatokat és ezeket a
+                fenti keretrendszerben reprezentálja.</para>
+        </section>
+    </section>        
+        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                

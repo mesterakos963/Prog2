@@ -22,6 +22,30 @@
             </para>
         </xi:fallback>
     </xi:include>     
+
+<xi:include href="bhax-textbook-feladatok-arroway.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+
+<xi:include href="bhax-textbook-feladatok-liskov.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+
+<xi:include href="bhax-textbook-feladatok2-mandelbrot.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>      
     
     
             
