@@ -1,0 +1,246 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Chomsky!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>Encoding</title>
+        <para>A feladatunk az volt, hogy fordítsuk le és futtassuk a Javát tanítok könyv
+            MandelbrotHalmazNagyító.java forrását az ékezetes betűk meghagyásával a fájlnevekben és
+            a forrásban. Ez a feladat a karakterkészlet gyakorlatbeli fontosságára világít
+            rá.</para>
+        <para>Fordításkor elég sok error-ba ütközünk.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../HelloChomsky/hibauzi.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>A hibaüzenetek elég világossá teszik számunkra, hogy a kódolással van gond. A fordító
+            azt mondja, hogy nem található karakter az UTF 8 kódolás számára. Ékezetes karaktereket
+            a Latin1 és a Latin2 (ISO 8859-1 és ISO 8859-2) szabványok tartalmaznak. Viszont a
+            fordítás ezeket használva sem ment.</para>
+        <para>Kis keresgélés után az alábbi oldalra akadtam:</para>
+        <para><link
+                xlink:href="https://docs.oracle.com/javase/9/intl/supported-encodings.htm#JSINT-GUID-187BA718-195F-4C39-B0D5-F3FDF02C7205"
+            /></para>
+        <para>Megoldást az windows-1250\u0000 jelentett, ami az ISO-8859-1 windowsbeli megfelelője.
+            Ezzel a kódolással a program már gond nélkül lefordult. Ehhez a -encoding flaget kellett
+            használnunk.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../HelloChomsky/futtatas.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Most, hogy van egy futó programunk haladunk tovább a feladattal, azaz először a
+            Mandelbrot iterációkat fordítjuk le.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../HelloChomsky/iteraciokkal.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Nagyítás:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../HelloChomsky/nagyiatas.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+    </section>
+    <section>
+        <title>OOCWC lexer</title>
+        <para>A feladat azt kérte tőlünk, hogy izzítsuk be az OOCWC-t és vázoljuk a
+            https://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/carlexer.ll
+            lexert és kapcsolását a programunk OO struktúrájába! Ez a feladat a lexerekre világít
+            rá, de jelen esetben nem a programozási nyelv lexikális egységeiről lesz szó, hanem
+            tokenekről. </para>
+        <para>A lexert bemeneti sztringet feldolgozására szokás használni, ahogy jelen esetben is.
+            Van néhány előre meghatározott és nevesített reguláris
+            kifejezés.<programlisting>INIT "&lt;init"
+INITG "&lt;init guided"
+WS [ \t]*
+WORD [^-:\n \t()]{2,}
+INT [0123456789]+
+FLOAT [-.0123456789]+
+ROUTE "&lt;route"
+CAR "&lt;car"
+POS "&lt;pos"
+GANGSTERS "&lt;gangsters"
+STAT "&lt;stat"
+DISP "&lt;disp>"</programlisting></para>
+        <para>A WS [ \t]*  a whitespace karakter előfordulását jelzi, a '*' azt jelenti, hogy
+            bármennyiszer előfordulhat.</para>
+        <para>Az INT [0123456789]+ a természetes számokat jelenti, a '+' karakter jelentése, hogy a
+            felsorolt számok bármennyiszer, de minimum egyszer szerepelnek. Float esetén ugyanígy
+            működik, azonban ott ki kell egészítenünk egy tizedes vesszővel.</para>
+        <para>Ha ezek közül a karakterláncok közül valamelyik szerepel a bemenetben, akkor az annak
+            megfelelő kód fog ledutni.</para>
+        <programlisting>{DISP} {
+m_cmd = 0;
+}
+
+{POS}{WS}{INT}{WS}{INT}{WS}{INT} {
+
+std::sscanf(yytext, "&lt;pos %d %u %u", &amp;m_id, &amp;from, &amp;to);
+m_cmd = 10001;
+}
+
+{CAR}{WS}{INT} {
+
+std::sscanf(yytext, "&lt;car %d", &amp;m_id);
+m_cmd = 1001;
+}
+
+{STAT}{WS}{INT} {
+
+std::sscanf(yytext, "&lt;stat %d", &amp;m_id);
+m_cmd = 1003;
+}
+
+{GANGSTERS}{WS}{INT} {
+
+std::sscanf(yytext, "&lt;gangsters %d", &amp;m_id);
+m_cmd = 1002;
+}
+
+{ROUTE}{WS}{INT}{WS}{INT}({WS}{INT})* {
+
+int size{0};
+int ss{0};
+int sn{0};
+std::sscanf(yytext, "&lt;route %d %d%n", &amp;size, &amp;m_id, &amp;sn);
+ss += sn;
+for(int i{0}; i&lt;size; ++i)
+{
+unsigned int u{0u};
+std::sscanf(yytext+ss, "%u%n", &amp;u, &amp;sn);
+route.push_back(u);
+ss += sn;
+}
+m_cmd = 101;
+}
+{INIT}{WS}{WORD}{WS}("c"|"g") {
+
+std::sscanf(yytext, "&lt;init %s %c>", name, &amp;role);
+num = 1;
+m_cmd = 0;
+}
+{INIT}{WS}{WORD}{WS}{INT}{WS}("c"|"g") {
+
+std::sscanf(yytext, "&lt;init %s %d %c>", name, &amp;num, &amp;role);
+if(num >200)
+{
+m_errnumber = 1;
+num = 200;
+}
+m_cmd = 1;
+}
+{INITG}{WS}{WORD}{WS}("c"|"g") {
+
+std::sscanf(yytext, "&lt;init guided %s %c>", name, &amp;role);
+num = 1;
+m_guided = true;
+m_cmd = 3;
+}
+{INITG}{WS}{WORD}{WS}{INT}{WS}("c"|"g") {
+
+std::sscanf(yytext, "&lt;init guided %s %d %c>", name, &amp;num, &amp;role);
+if(num >200)
+{
+m_errnumber = 1;
+num = 200;
+}
+m_guided = true;
+m_cmd = 2;
+}
+. {;}</programlisting>
+    </section>
+    <section>
+        <title>l334d1c4</title>
+        <para>A feladat az volt, hogy készítsünk olyan Java vagy C++ programot, ami leet chiperként
+            működik. A "leet speak" kommunikáció során a betűket a rá hasonliító számokkal
+            helyettesítjük.</para>
+        <para>Például a leet-et ilyen formában a következő képen néz ki: 1337.</para>
+        <para>Megoldás forrása: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloChomsky/L33tSpeak.java"
+            /></para>
+        <para>A program elején csatoljuk a szükséges
+            könyvtárakat.<programlisting>import java.io.*;
+import java.util.*;</programlisting></para>
+        <para>A java.io rendszerbevitelt és -kimenetet biztosít adatfolyamokon, sorosításon és a
+            fájlrendszeren keresztül. Ha a null argumentumot adunk neki, a csomag bármelyik
+            osztályában vagy interfészében egy konstruktornak vagy metódusnak, akkor
+            NullPointerException lép ki a program.</para>
+        <para>A java.util strig tokenizer, random szám generátor és bit tömb.</para>
+        <para>Következő lépésben létrehozzuk a L33tSpeak osztályt.
+            <programlisting>public class L33tSpeak {
+	public static void main(String[] args) throws FileNotFoundException {
+		Scanner input = new Scanner(new File("bemenet.txt"));
+		PrintStream out = new PrintStream(new File("kimenet.txt"));
+		leetSpeak(input, out);
+	}</programlisting></para>
+        <para>Itt adjuk meg a be- és kimeneti állományt, valamint egy hibaüzenetet is létrehozunk
+            arra az esetre, ha a bemeneti állomány nem létezik. </para>
+        <para>A következő részben vannak megadva a szabályok a leeteléshez, amiket bővíthetünk,
+            módosíthatunk kedvünk szerint. Itt megy végbe a leetelés és a leetelt szöveg kimenet.txt
+            állományba való
+            kiírása.<programlisting>public static void leetSpeak(Scanner input, PrintStream output) {
+		while (input.hasNextLine()) {
+			String sor = input.nextLine();
+			Scanner tokens = new Scanner(sor);
+			
+			while (tokens.hasNext()) {
+				String token = tokens.next();
+				token = token.replace("a", "4");
+				token = token.replace("o", "0");
+				token = token.replace("l", "1");
+				token = token.replace("e", "3");
+				token = token.replace("t", "7");
+				if (token.endsWith("s")) {
+					token = token.substring(0, token.length() - 1) + "Z";
+				}
+				output.print("(" + token + ") ");
+			}
+			
+			output.println();</programlisting></para>
+        <para>Futtatáskor fontos, hogy legyen létrehozva a bemenet.txt fájl a leetelni kívánt
+            szöveggel.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/leet.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+    </section>
+    <section>
+        <title>Perceptron osztály</title>
+        <para>A feladat az volt, hogy dolgozzuk be egy külön projektbe a projekt Perceptron
+            osztályát!</para>
+        <para>Megoldás forrása: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloChomsky/perceptron.cpp"
+            /></para>
+        <para>A perceptron a mesterséges inteligenciában a neutron megfelelője. Tanulásra képes, a
+            bemeneti 0-ák és 1-ek sorozatából mintákat tanul meg.</para>
+        <para>Ebben a feladatban a perceptron kap egy képet bemenetnek (a mandelbrot halmazt
+            ábrázoló képet). Ez lesz a többrétegű neurális háló bemenete.</para>
+        <para>Mivel többrétegű perceptront akarunk létrehozni, ezért csatolnunk kell az mlp és a
+            png++/png könyvtárakat, valamint utóbbi könyvtár a png-kel való munkát teszi
+            lehetővé.</para>
+        <para>A main függvényben adjuk meg, hogy az első argumentumban szereplő állományt szeretnénk
+            olvasni. Meghatározzuk a kép méretét valamint ezeket az értékeket el is tároljuk.
+            Létrehozunk egy példányt a perceptron osztályból, melynek argumentumai a rétegek száma,
+            az első és a második réteg neuronjai az inputrétegben. Ezután két for ciklussal
+            végigmegyünk a képen vízszintesen és függőlegesen. A vörös színkomponenst az image-ben
+            tároljuk. A value egy double típusú értéket tárol. Ezt az értéket a percetron image-re
+            történő meghívása adja majd meg. Kiírjuk az értéket, majd a memória felszabadítása
+            végett töröljük a már használni nem kívánt értékeket.</para>
+        <para>  Fordítás, futtatás:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/haha.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para> </para>
+    </section>                     
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
