@@ -1,0 +1,221 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Gödel!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>Gengszterek</title>
+        <para>Feladatunk a gengszterek rendezése lambdával a Robotautó világbajnokságban.</para>
+        <para>Ez a feladat a C++11-ben bevezetett std::sort() függvényt helyezi középpontba.</para>
+        <para>Lássuk a kódrészletet:</para>
+        <para>
+            <programlisting language="c++">
+            std::sort ( gangsters.begin(), gangsters.end(), [this, cop] ( Gangster x, Gangster y )
+            {
+                return dst ( cop, x.to ) &lt; dst ( cop, y.to );
+            } );                  
+            </programlisting>
+        </para>
+        <para>Ez az std::sort() függvénynek több verziója is van: 2 és 3 paraméteres. Az első
+            kettőben a tartományt adjuk meg, amelyet rendezni szeretnénk. A mi esetünkben az összes
+            gengsztert szeretnénk, tehát ez a gangsters.begin() és a gangsters.end() függvénnyel
+            adjuk meg,ami megadja az első és utolsó elem indexét.  A harmadik paraméter opcionális,
+            egy rendezés alapjául szolgáló függvény. Ennek hiánya esetén a beépített függvény dönti
+            el, hogy mi alapján megy majd végbe a rendezés.</para>
+        <para> A C++ 11 óta támogatott szintaxis a
+            következő:<programlisting>
+                [](paraméter1, paraméter2, paraméter3)-> visszatérési típusa {utasítások}
+            </programlisting></para>
+        <para>A [] jelek közé írt változókat a függvényen kívülről is el tudjuk érni. A mi
+            esetünkben a cop objektumra, illetve az aktuális objektum mutatójára lesz szükség.
+            Paraméterként megadunk két Gangster osztályú objektumot, melyek a sort által
+            összehasonlított elemek lesznek. Azt vizsgáljuk, hogy melyik gengszter van közelebb a
+            rendőrhöz és aszerint rendezzük növekvő sorrendbe őket, majd visszatérítünk egy bool
+            értéket.</para>
+    </section>
+    <section>
+        <title>Custom allokátor</title>
+        <para>Megoldás forrása: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/HelloG%C3%B6del/customalloc.cpp"
+            /></para>
+        <para>Egy objektum példányosításakor a memóriában lefoglalódik a szükséges terület. C++-ban
+            ezt a new operátor segítségével tehetjük meg. Ez meghívja az alapértelmezet allokátort.
+            Tökéletesen ellát minden feladatot, azonban ha kicsit jobban bele szeretnénk avatkozni a
+            memóriakezelésbe, akkor saját allokátort kell készítenünk.</para>
+        <para>Létrehozunk egy CustomAlloc osztályt. Ez egy template osztály lesz, tehát bármilyen
+            típussal használható.</para>
+        <para>
+            <programlisting>template&lt;typename T>
+struct CustomAlloc {
+        ****
+}</programlisting>
+        </para>
+        <para>A using kulcsszóval megadjuk, hogy mit milyen néven szeretnénk használni ezután.
+            Láthatjuk, hogy a T* pointert fogja jelenteni, a T&amp; a referenciát
+            stb.<programlisting>using size_type = size_t;
+	using value_type = T;
+	using pointer = T*;
+	using const_pointer = const T*;
+	using reference = T&amp;;
+	using const_reference = const T&amp;;
+	using difference_type = ptrdiff_t;</programlisting></para>
+        <para>Az allocate nevű funkció egy pointert ad vissza. Paramétere size_type típusú. Ez fogja
+            a szükséges memóriaterületet
+            lefoglalni.<programlisting>pointer allocate ( size_type n ) {
+		int s;
+		char* p=abi::__cxa_demangle ( typeid ( T ).name(),0,0, &amp;s);
+		std::cout &lt;&lt; "Allocating "
+				  &lt;&lt; n &lt;&lt; " objects of "
+				  &lt;&lt; n+sizeof ( T )
+				  &lt;&lt; " bytes. "
+				  &lt;&lt; typeid ( T ).name() &lt;&lt; "=" &lt;&lt; p
+				  &lt;&lt; std::endl;
+		free ( p );
+		return reinterpret_cast&lt;T*> (
+			new char[n*sizeof ( T )] );
+		}
+		void deallocate ( pointer p, size_type n ) {
+			delete[] reinterpret_cast&lt;char *> ( p );
+			std::cout &lt;&lt; "Deallocating "
+					  &lt;&lt; n &lt;&lt; " objects of "
+					  &lt;&lt; n+sizeof ( T )
+					  &lt;&lt; " bytes. "
+					  &lt;&lt; typeid ( T ).name() &lt;&lt; "=" &lt;&lt; p
+					  &lt;&lt; std::endl;
+	}</programlisting></para>
+        <para>Az újdonságnak számí a __cxa_demangle funkció. Ez a fordító által kódolt funkció és
+            változónevek visszafejtéséhez szükséges. Első paramétere a visszafejtendő név, második
+            az output buffer, aztán a hossz, majd a státusz. Ezt eltároljuk az integer típusú 's'
+            változónkba.</para>
+        <para>Ezután kiiratjuk, hogy hány objektumnak foglalunk helyet és ezt hány bájton tesszük
+            meg. A 'p'-ben tároljuk el a typeid(T).name() által visszafejtett típus
+            típusazonosítóját. Ezután felszabadítjuk a 'p'-t és visszatérünk a lefogalt területre
+            mutató T típusú mutatóval.</para>
+        <para>A deallocate szabadítja fel a lefoglalt memória területet.</para>
+        <para>Most jön a main()
+            függvény:<programlisting>int main(){
+std::vector&lt;int, CustomAlloc&lt;int>> v;
+v.push_back(1);
+v.push_back(2);
+v.push_back(3);
+v.push_back(4);
+v.push_back(5);
+v.push_back(6);
+v.push_back(7);
+v.push_back(8);
+v.push_back(9);
+v.push_back(10);
+v.push_back(11);
+v.push_back(12);
+v.push_back(13);
+v.push_back(14);
+v.push_back(15);
+for(int x : v){
+	std::cout &lt;&lt; x &lt;&lt; std::endl;
+	}
+return 0;
+}</programlisting></para>
+        <para>Létrehozunk egy integer elemeket tartalmazó vektort és megadjuk, hogy
+            memóriafoglalásnál a mi allokátorunkat szeretnénk használni. A v.push_back() függvénnyel
+            hozzáfűzünk 15 db integert és végigmegyünk a vektoron egy for ciklussal.</para>
+        <para>Fordítás, futtatás:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/ca.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+    </section>
+    <section>
+        <title>STL map érték szerinti rendezése</title>
+        <para>A Standart Template Library (STL) egy tárolókat és algoritmusokat tartalmazó könyvtár.
+            Ebben található meg például a vector, list, stack és a map, amiről ebben a feladatban
+            szó lesz.</para>
+        <para>A map asszociatív tároló, a benne tárolt értéken kívül rendelkezik egy kulcs értékkel
+            is, ami szerint a benne tárolt adatok növekvő sorrendben vannak rendezve.</para>
+        <para>Nézzük meg ennek a felhasználását a Tanár úr által csatolt példában, ami az alábbi
+            linken érhető el:</para>
+        <para><link
+                xlink:href="https://github.com/nbatfai/future/blob/master/cs/F9F2/fenykard.cpp#L180"
+            /></para>
+        <para>A
+            kódcsipet:<programlisting>std::vector&lt;std::pair&lt;std::string, int>> sort_map ( std::map &lt;std::string, int> &amp;rank )
+{
+        std::vector&lt;std::pair&lt;std::string, int>> ordered;
+
+        for ( auto &amp; i : rank ) {
+                if ( i.second ) {
+                        std::pair&lt;std::string, int> p {i.first, i.second};
+                        ordered.push_back ( p );
+                }
+        }
+
+        std::sort (
+                std::begin ( ordered ), std::end ( ordered ),
+        [ = ] ( auto &amp;&amp; p1, auto &amp;&amp; p2 ) {
+                return p1.second > p2.second;
+        }
+        );
+
+        return ordered;
+}</programlisting></para>
+        <para>A függvény neve sort_map, visszatérési értéke egy string-int párokat tartalmazó
+            vektor. Ehhez az std::pair fogjuk használni, amiben különböző elemekből alkotott párokat
+            lehet tárolni. Paraméterként a függvény megkapja az std::map referenciát.</para>
+        <para>Létrehozunk egy üres vektort, ami string párokat fog tartalmazni, ez lesz később a
+            visszatérési érték. Ezután egy for ciklussal végigjárjuk a rank nevű map-et és
+            ellenőrizzük, hogy van-e már második értékpár. Ha van, akkor létrehozunk egy std::pair
+            adatstruktúrát és a létrehozott párokat tároljuk az ordered vektorba.</para>
+        <para>Meghívjuk az std::sort függvényt az ordered vektorra és rendezzük az elejétől a
+            végéig. Az első feladatban használt lambda kifejezés segítségével megadjuk, hogy
+            miképpen szeretnénk összehasonlítani az elemeket. Paraméterei kettő auto típusú
+            jobbérték, visszatérési értéke bool, aminek értékét a p1.second és p2.second
+            összehasonlítása adja meg.</para>
+        <para>A [ = ] jelentése, hogy a lambda kifejezés másolás útján fogja átvenni a változókat,
+            nem referenciaként.</para>
+        <para>A végén visszaadjuk a rendezett vektort. (return ordered).</para>
+    </section>
+    <section>
+        <title>Alternatív Tabella rendezése</title>
+        <para>Feladatunk hogy mutassuk be a https://progpater.blog.hu/2011/03/11/alternativ_tabella
+            a programban a java.lang Interface Comparable&lt;T> szerepét!</para>
+        <para>Kezdjük ott, hogy mi az az alternatív tabella:</para>
+        <para>Az alternatív tabella a futball bajnokságoknál használt tabellával (tehát ahol a
+            győzelemért 3, döntetlenért 1, vereségért pedig 0 pont jár) szemben azt veszi figyelembe
+            sorbarendezésnél, hogy egy adott csapat melyik másik csapattal szemben érte el az adott
+            eredményt. Normál tabellánál a leggyengébb csapat elleni győzelem úgyanúgy 3 pontot ér,
+            mint a legerősebb elleni. Az alternatív tabella erre kínál alternatív megoldást.</para>
+        <para>A Java Comparable interfészt a felhasználó által megadott típusok rendezésére
+            használjuk. </para>
+        <para>T --> az objektum típusa, amihez hasonlítani szeretnénk az interfészt implementáló
+            objektumot. Ez a java.lang csomagban található meg és csupán a compareTo(Object)
+            metódust tartalmazza.</para>
+        <para>Hozzunk létre egy osztályt egy csapatra és implementáljuk a Comparable interfészt
+            rá.<programlisting>class Csapat implements Comparable&lt;Csapat> {
+    protected String nev;
+    protected double ertek;
+    public Csapat(String nev, double ertek) {
+        this.nev = nev;
+        this.ertek = ertek;
+    }
+    public int compareTo(Csapat csapat) {
+        if (this.ertek &lt; csapat.ertek) {
+            return -1;
+        } else if (this.ertek > csapat.ertek) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}</programlisting></para>
+        <para>Az osztály konstruktora adja meg a név és érték változókat. Definiáljuk az interfész
+            fentebb is említett compareTo() metódusát. Ha a paraméterként megadott objektumban
+            szereplő érték változó kisebb, mint a hasonlítandó objektum érték változója, akkor
+            visszatérési értéknek -1-et kapunk, ha nagyobb 1-et. Ha az értékek egyenlőek, akkor a
+            visszatérési érték 0 lesz. Így határozzuk meg az osztályból példányosított objektumok
+            sorbarendezési módját.</para>
+    </section>                     
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                

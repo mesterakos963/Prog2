@@ -1,0 +1,419 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Stroustrup!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+
+    <section>
+        <title>JDK osztályok</title>
+        <para>A feladatunk az volt, hogy írjunk olyan Boost C++ programot a fénykart példából
+            kiindulva, amely kilistázza a JDK összes osztályát (miután kicsomagoltuk az src.zip
+            állományt, arra ráengedve)!</para>
+        <para>Ehhez először a sudo apt-get install libboost-all-dev paranccsal telepítenünk kell a
+            boost könyvtárat. Ez a könyvtár több dologban is a segítségünkre lesz: ezzel határozzuk
+            meg az src elérési útját és megyünk végig az összes fájlon és almappán, továbbá ezzel
+            határozzuk meg a fájlok kiterjesztését és döntjük el, hogy a vizsgált elem almappa vagy
+            fájl.</para>
+        <para>Fordtíás és futtatás után a következőt kapjuk:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/jdkkesz.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para> A kapott szám az osztályok számát mutatja.</para>
+        <para>A kód elején csatoljuk a
+            könyvtárakat.<programlisting>#include &lt;boost/filesystem.hpp> 
+Filesystem declarations
+#include &lt;iostream>
+using namespace std;</programlisting></para>
+        <para>Ami számunkra most érdekes, az a &lt;boost/filesystem.hpp> könyvtár. Ez az a könyvtár,
+            amit a feladat elején letöltöttünk. Az ott említett feladatokat látja el.</para>
+        <programlisting>int main(int ac, char** av)
+{
+	string extension;
+	int count = 0;
+	boost::filesystem::recursive_directory_iterator iterator(string ←- ("/Prog2/HelloStroustrup/src"));
+	while(iterator != boost::filesystem:: ←- recursive_directory_iterator())
+	{
+		string extension = boost::filesystem::extension(iterator-> ←-
+		path().filename());
+		if(boost::filesystem::is_regular_file(iterator->path()) &amp;&amp; ←-extension == ".java")
+		{
+			count++;
+		}
+		++iterator;
+	}
+cout &lt;&lt; count &lt;&lt; endl;
+return 0;
+}</programlisting>
+        <para>Ezt a main függvény követi, ahol egy egyszerű while ciklussal addig vizsgáljuk át az
+            elemeket, amíg a végére nem érünk, ezzel együtt növelünk egy számlálót, amit a végén
+            kiiratunk std::cout-tal.</para>
+    </section>
+    <section>
+        <title>Hibásan működő</title>
+        <para>A feladatunk az volt, hogy készítsünk betű gyakoriság alapú törést egy hibásan
+            implementált RSA kódoló:
+            https://arato.inf.unideb.hu/batfai.norbert/UDPROG/deprecated/Prog2_3.pdf (71-73 fólia)
+            által készített titkos szövegen.</para>
+        <para>Az elrontott RSA nem egyben kódolja a szöveget, hanem karakterenként. Ha betű
+            gyakoriság alapján törünk egy szöveget, az azt jelenti, hogy a miután a törő program
+            megvizsgálta a kódolt szöveget egy, a betűk gyakoriságát tartalmazó táblázat
+            segítségével visszafejti azt.</para>
+        <para>RSA kódolás - nyílt kulcsú, azaz asszimetrikus titkosító algoritmus. Kitalálója Ron
+            Rivest, Adi Shamir és Len Adleman (1976) (innen kapta a nevét). Napjaink leggyakrabban
+            használt titkosítási eljárása. Kettő kulcs van: egy titkos és egy nyílvános. A nyílvános
+            kulcsra a szöveg titkosításához van szükség, a titkos(privát) kulcsra pedig a
+            dekódoláshoz. Helytelen kulcs használata esetén a kapott eredmény a dekódolás után hibás
+            lesz. </para>
+        <para>A titkosító
+            kód:<programlisting>import java.math.BigInteger;
+import java.security.SecureRandom;
+import java.util.*;</programlisting></para>
+        <para>A kód elején importáljuk a használni kívánt osztályokat: BigInteger - nagy számokkal
+            való munkához szükéges (kulcsok); SecureRandom - előállít egy kódoláshoz használt
+            biztonságos
+            számot.<programlisting>public class RSA {
+private final static BigInteger one = new BigInteger("1");
+private final static SecureRandom random = new SecureRandom();
+
+private BigInteger privateKey;
+private BigInteger publicKey;
+private BigInteger modulus;
+
+RSA(int N) {
+    BigInteger p = BigInteger.probablePrime(N/2, random);
+    BigInteger q = BigInteger.probablePrime(N/2, random);
+    BigInteger phi = (p.subtract(one)).multiply(q.subtract(one));
+    modulus = p.multiply(q);
+    publicKey = new BigInteger("65537");
+    privateKey = publicKey.modInverse(phi);
+}</programlisting></para>
+        <para>Az RSA eljárásban létrehozunk 2 probablePrime (valószínűleg prím számot), amit a 'p'
+            és a 'q' változók fognak tárolni. Ezt követően kiszámoljuk a phi moduló
+            értékét.<programlisting>BigInteger encrypt(byte[] bytes) {
+    BigInteger swap = new BigInteger(bytes);
+    return swap.modPow(publicKey, modulus);
+}</programlisting></para>
+        <para>A fenti encrypt függvény végzi a titkosítást. A byte-ba átváltott karaktert kapja meg,
+            amit majd swap-ban fog eltárolni, mivel a modPow csak BigInteger-en alkalmazható. A
+            titkosítás a visszatérésnél megy végbe.</para>
+        <para>
+            <programlisting>public static void main(String[] args) {
+    int N = Integer.parseInt(args[0]);
+    RSA key = new RSA(N);
+    System.out.println("key = " + key);
+    String s = "test";
+    byte[] bytes = s.getBytes();
+    List&lt;BigInteger> result = new ArrayList&lt;BigInteger>();
+    byte[] atmenet = new byte[1];
+    for(int i = 0; i &lt; bytes.length; i++)
+    {
+        atmenet[0] = bytes[i];
+        result.add(key.encrypt(atmenet));
+    }
+    System.out.println("message = " + s);
+    System.out.println("encrypted = " + result);
+}</programlisting>
+        </para>
+        <para>A main függvényben parancssorból bekérjük az N-t, amivel majd legeneráljuk a kulcsot.
+            Az 's'-be adjuk meg a titkosítani kívánt szöveget byte típusban. Az eredményt eltároljuk
+            a result-ban. A for ciklus megy végig a byte tömbön és a kódolt szöveget folyamatosan
+            fűzzük hozzá a result-hoz, amit majd a program végén kiiratunk.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/asdasd.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Dekódolás</para>
+        <para>Ehhez két kódot kell átnéznünk: Kulcspar.java és RsaTores.java</para>
+        <para>A Kulcspar.java 3 privát változót tartalmaz, valamint metódusokat, hogy ezeket a
+            számokat kívülről is meg tudjuk nézni és felül tudjuk
+            írni.<programlisting>class KulcsPar{
+    private String values;
+    private char key = ’_’;
+    private int freq = 0;
+    public KulcsPar(String str){
+    this.values = str;
+    }
+    public void setValue(String str){
+        this.values = str;
+    }
+    public void setKey(char k){
+        this.key = k;
+    }
+    public String getValue(){
+        return this.values;
+    }
+    public char getKey(){
+        return this.key;
+    }
+    public void incFreq(){
+        freq += 1;
+    }
+    public int getFreq(){
+        return freq;
+    }
+}</programlisting></para>
+        <para>Ami számunkra érdekesebb, az az RsaTores.java. Elsőként beolvassuk a dekódolandó
+            szöveget a bemenet.txt állományból soronként, közben léptetünk egy
+            számlálót.<programlisting>BufferedReader inputStream = new BufferedReader(new FileReader("bemenet ←-.txt"));
+int lines = 0;
+String line[] = new String[10000];
+while((line[lines] = inputStream.readLine()) != null) {
+    lines++;
+}
+inputStream.close();</programlisting></para>
+        <para>Ezt követően létrehozzuk egy 'kp' tömböt, amibe az első beolvasott sort fogjuk
+            tárolni, aztán létrehozunk egy 'db' változót 1 kezdőértékkel. Megyünk végig a sorokon és
+            megszámoljuk, hogy melyik betűből hány van.
+            <programlisting>kp[0] = new KulcsPar(line[0]);
+int db = 1;
+for(int i = 1; i &lt; lines; i++) {
+    volt = false;
+    for(int j = 0; j &lt; db; j++) {
+        if(kp[j].getValue().equals(line[i])) {
+            kp[j].incFreq();
+            volt = true;
+            break;
+            }
+        }
+        if(volt == false) {
+            kp[db] = new KulcsPar(line[i]);
+            db++;
+        }
+}</programlisting></para>
+        <para>Miután megszámoltuk a karaktereket, ezeket csökkenő sorrendbe rendezzük. Rendezés után
+            beolvassuk az "angol.txt" állományt és tároljuk a "key" tömbben. Ez az állomány
+            tartalmazza, hogy a karakterek gyakoriságát a szövegben.
+            <programlisting>for(int i = 0; i &lt; kdb &amp;&amp; kp[i] != null; i++) {
+    kp[i].setKey(key[i]);
+    }
+for(int i = 0; i &lt; lines; i++) {
+    for(int j = 0; j &lt; db; j++) {
+        if(line[i].equals(kp[j].getValue())) {
+            System.out.print(kp[j].getKey());
+        }
+    }
+}</programlisting></para>
+        <para>A program végén párosítjuk a kódolt szöveget az angol.txt állománnyal. Itt történik a
+            dekódolás, majd az eredményt kiíratjuk.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/keszrsa.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+    </section>
+    <section>
+        <title>String osztály és másoló-mozgató szemantika</title>
+        <para>A feladat egy egyszerű string osztály elkészítése volt, hogy ne a verembe tegyük a
+            kockászárójel megvalósítását, mert az nyilván odacsap az osztály értelmezésének.</para>
+        <para>
+            <programlisting>#include &lt;iostream>
+#include &lt;cstring>
+#include &lt;algorithm>
+
+using namespace std;</programlisting>
+        </para>
+        <para>A kód elején csatoljuk a könyvtárakat. </para>
+        <para>&lt;iostream> - standard in- és output használatához szükséges.</para>
+        <para>&lt;cstring> - karakterláncok kezeléséhez szükséges.</para>
+        <para>&lt;algorithm> - olyan függvényeket tartalmaz, mint például: keresés, rendezés,
+            számolás stb.</para>
+        <para>Ez egy string osztály definiálása, ami egy heap-en foglalt memóriaterületre mutató
+            mutatót tartalmaz. A heap allokáció jelentése, hogy futás közben foglaljuk le a
+            tárhelyet, ellentétben a stack allokációval.</para>
+        <para>
+            <programlisting>class mystring
+{
+	char* data;
+	public:
+	char* Data() const {return data;}
+	mystring(const char* p)
+	{
+		cout&lt;&lt;"konstruktor"&lt;&lt;endl;
+		size_t size = strlen(p) + 1;
+		data = new char[size];
+		memcpy(data, p, size);
+	}</programlisting>
+        </para>
+        <para>A string számára lefoglalt memóriaterület első karakterére mutató pointer.</para>
+        <para>
+            <programlisting>class mystring
+{
+	char* data;
+	public:
+	char* Data() const {return data;}</programlisting>
+        </para>
+        <para>A char típusú privát tag elérésére szolgáló függvény.</para>
+        <para>
+            <programlisting>	mystring(const char* p)
+	{
+		cout&lt;&lt;"konstruktor"&lt;&lt;endl;
+		size_t size = strlen(p) + 1;
+		data = new char[size];
+		memcpy(data, p, size);
+	}</programlisting>
+        </para>
+        <para>Mi foglaljuk le a memóriát, ezért nekünk kell kiüríteni azt, hogy elkerüljük a
+            memóriafolyást. A delete[]-tel jelezzük, hogy a tömböt szeretnénk felszabadítani.</para>
+        <para>
+            <programlisting>        ~mystring()
+	{
+	delete[] data;
+	}</programlisting>
+        </para>
+        <para>A másoló konstruktor adja meg, hogy mit jelent a mystring tipusú objektum. C++11-ben
+            lehetőségünk van detektálni az rvalue(jobbérték) argumentumokat. Ez egy olyan ideiglenes
+            objektum, ami az őket tartalmazó kifejezés végén megsemmisül.</para>
+        <para>Konstruktort csinálunk ilyen rvalue paraméterrel. Ha ilyen jobbértékről van szó a
+            futás közben, akkor a konstruktor fog meghívódni.</para>
+        <para>
+            <programlisting>	mystring(const mystring&amp; regi)
+	{
+		cout&lt;&lt;"másoló konstruktor"&lt;&lt;endl;
+		size_t size = strlen(regi.data) + 1;
+		data = new char[size];
+		memcpy(data, regi.data, size);
+	}</programlisting>
+        </para>
+        <para>A másoló értékadásnál túlterheljük az '=' operátort és a swap funkcióval felcseréljük
+            a két pointert.</para>
+        <para>
+            <programlisting>	mystring&amp; operator=(const mystring&amp; regi)
+	{
+		cout&lt;&lt;"másoló értékadás"&lt;&lt;endl;
+		delete[] data;
+		size_t size = strlen(regi.data) + 1;
+		data = new char[size];
+		memcpy(data, regi.data, size);
+		return *this;
+	}</programlisting>
+        </para>
+        <para>Az itt következő részben nem végzünk másolást, csupán mozgatást amódon, hogy a heap-en
+            lévő adat másolása helyett csupán a pointert másoljuk és állítjuk az értékét null-ra.
+            Így nem fog lefutni a destruktor. </para>
+        <para>
+            <programlisting>	mystring (mystring&amp;&amp; regi )
+	{
+		cout&lt;&lt;"mozgató konstruktor"&lt;&lt;endl;
+		data = regi.data;
+		regi.data = nullptr;
+	}</programlisting>
+        </para>
+        <para>Operátor túlterhelés segítségével érjük el, hogy ki tudjuk iratni az objektumunk
+            tartalmát.</para>
+        <para>A "*this" az aktuális objektumra mutat rá. A move funkció kikényszerítve a mozgató
+            szemantikát a bal értékből jobb értéket készít (lvalue --> rvalue)</para>
+        <para>
+            <programlisting>	mystring&amp; operator=(mystring&amp;&amp; regi)
+	{
+		cout&lt;&lt;"mozgató értékadás"&lt;&lt;endl;
+		swap(data, regi.data);
+		return *this;
+	}</programlisting>
+        </para>
+        <para>Túlterheljük a [] operátort a const kulcsszó használata nélkül, így a funkció csak
+            konstans objektumokra fog meghívódni. </para>
+        <para>
+            <programlisting>	char operator[](int i) 
+	{
+		size_t size = strlen(data) -1;
+		if( i > size ) 
+		{ 
+			cout &lt;&lt; "Out of range" &lt;&lt;endl; 
+		}
+		return data [i];
+	}
+};</programlisting>
+        </para>
+        <para>A teljes forrás elérhető itt: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/String%20class/string.cpp"
+            /></para>
+    </section>
+    <section>
+        <title>ESSZÉ: RSA titkosító eljárás</title>
+        <para>Az RSA-eljárás, mint ahogy azt már egy korábbi feladatban is leírtam, egy nyílt kulcsú
+            titkosító algoritmus, napjaink leggyakrabban használt titkosítási eljárása.
+            Kitalálásának éve: 1976. Alkotói (egyben a nevét is innen kapta):Ron Rivest, Adi Shamir
+            és Len Adleman. Alapját a moduláris és prímszámelmélet bizonyos tételei jelentik.</para>
+        <para>MATEMATIKAI HÁTTÉR:</para>
+        <para>Legyen:<itemizedlist>
+                <listitem>
+                    <para>p, q --> nagy prímek;</para>
+                </listitem>
+                <listitem>
+                    <para>N = p * q;</para>
+                </listitem>
+                <listitem>
+                    <para>(t, phi(N)) = 1;</para>
+                </listitem>
+                <listitem>
+                    <para>T, M --> kulcspár;</para>
+                </listitem>
+                <listitem>
+                    <para>T(r) = r^t legkisebb pozitív maradéka;</para>
+                </listitem>
+                <listitem>
+                    <para>M(s) = s^m legkisebb pozitív maradéka;</para>
+                </listitem>
+                <listitem>
+                    <para>r,s = 1,2,......,N;</para>
+                </listitem>
+                <listitem>
+                    <para>m * t = 1+k * phi(N);</para>
+                </listitem>
+                <listitem>
+                    <para>N, t, T --> nyílvános;</para>
+                </listitem>
+                <listitem>
+                    <para>p, q, m, M --> titkos;</para>
+                </listitem>
+                <listitem>
+                    <para>M = T^(-1), M a T ismeretében sem határozható meg.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>A 'p' és 'q' számokat a tulajdonos kapja meg prímteszteléssel. Ezek segítségével
+            határozza meg 'm'-et. Az "M(s)" függvényt csak a kulcsok tulajdonosa számolhatja ki,
+            szemben a "T(r)" fügvénnyel, amit bárki.</para>
+        <para>MŰKÖDÉSE:</para>
+        <para>A titkosításhoz szükség van egy nyílt és egy titkos kulcsra. A nyílt kulcs mindenki
+            számára ismert, így bárki tud kódolni, azonban a dekódoláshoz már szükség van a titkos
+            kulcsra, amit már csak az birtokol, aki majd dekódolni fogja a az "üzenetet".</para>
+        <para>Ahhoz, hogy biztosra menjünk a kódolás biztonságát illetően, biztossá kell tennünk,
+            hogy tényleg a feladatból kaptuk az üzenetet és nem valaki más küldte az ő nevében. </para>
+        <para>Ehhez nézzük meg az alábbi példát:</para>
+        <para>Buda Pest egy nyílvános kulcsát használja, hogy eljuttasson egy titkosított üzenetet,
+            amiben bizonyítani próbálja, hogy ő valójában Buda, nem pedig valaki más. Mivel a
+            nyílvános kulcsot bárki használhatja, ezért Pest egyáltalán nem lehet biztos abban, hogy
+            az üzenet Budától jött. Szerzői kilétünket RSA szintű biztonsággal tanúsíthatjuk, így az
+            RSA már valódi nyilvános kulcsú titkosító eljárássá növi ki magát.</para>
+        <para>Tehát Buda titkosított üzenetet szeretne küldeni Pestnek. Az üzenetből Buda kivág egy
+            részletet, aminek meghatározza az ASCII értékét, majd ez az értéket 'd'-edik hatványra
+            emeli, ezután a kapott számot modulo 'N'. A végeredményt, mint egy aláírást csatolja az
+            üzenethez. Így Pest számára már biztossá vált, hogy valóban Buda küldte az
+            üzenetet.</para>
+        <para>DE HOGYAN DEKÓDOLJA PEST AZ ALÁÍRÁST?</para>
+        <para>Ehhez Pestnek az aláírást felemeli 'e' kitevőjére és veszi modulo 'N' értékét. Mivel
+            ez a két művelet, amit Buda elvégzett az aláírás kódolásakor és amit Pest végez
+            dekódoláskor egymás inverzei, ezért az eredményként megkapott üzenetet összeveti az
+            üzenetben szereplő szövegrészlettel és ha egyezést talál, akkor Pest már 100%-ban biztos
+            lehet abban, hogy az üzenet Budától származik, mivel a titkos kucsl az ő birtokában
+            volt.</para>
+        <para>MÉGIS MENNYIRA BIZTONSÁGOS EZ AZ ELJÁRÁS?</para>
+        <para>A jelenlegi matematikai ismeretek szerint egy alaposan RSA kódolt üzenet nem fejthető
+            vissza számelméleti okok miatt belátható időn belül, azonban nincs bizonyítva az, hogy
+            lehetetlen olyan algoritmust kifejleszteni, amivel már kellőképen gyorsan lehetne
+            dekódolni az üzenetet, hogy érdemes legyen megpróbálni.</para>
+        <para>Az eljárás alapját az adja, hogy egy kellően nagy prímszámról nehéz megállapítani a
+            prímtényezőit, főleg ha ez a szám két nagy prímszám szorzásának eredménye. </para>
+        <para>1994-ben jelent meg Peter Shor publikációja, mely rámutat arra, hogy egy
+            kvantumszámítógép elméletileg végre tudja hajtani a faktorizációt polinom időn belül. Ha
+            ez tényleg megtörténne a gyakorlatban is, az az RSA kódolás teljes elavulásást
+            jelentené.</para>
+    </section>        
+        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
