@@ -1,0 +1,258 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, !</title>
+    </info>
+    <section>
+        <title>OOCWC Boost ASIO hálózatkezelése</title>
+        <para>A feladatunk az volt, hogy mutassunk rá a scanf szerepére és használatára!
+            https://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/carlexer.ll</para>
+        <para>Ez a feladat egy input stream adatainak feldolgozását mutatja be, a mintaprogramunk
+            pedig a már ismert OOCWC projekt, annak is a már korábban boncolgatott lexer
+            része.</para>
+        <para>Megoldás forrása: <link
+                xlink:href="https://github.com/nbatfai/robocar-emulator/blob/master/justine/rcemu/src/carlexer.ll"
+            /></para>
+        <para>Az sscanf formázott karaktersorozatból olvas be. Beolvasáshoz szükség van egy
+            feltételre a while ciklusban, mivel nem tudjuk, hogy hány gangster adatot olvasunk majd
+            be, így ellenőrizni kell az adatok validságát. </para>
+        <para>A várt formula:</para>
+        <para>
+            <programlisting>"&lt;OK %d %u %u %u>%n"</programlisting>
+        </para>
+        <para>Az validság ellenőrzésére az sscanf visszatérési értékét használjuk, ami a beolvasott
+            paraméterek számát jelöli. Jelen esetben ez 4. A ciklus a következő képen néz
+            ki:<programlisting>while ( std::sscanf ( data+nn, "&lt;OK %d %u %u %u>%n", &amp;idd, &amp;f, &amp;t, &amp;s, &amp;n ) == 4 )
+    {
+        nn += n;
+        gangsters.push_back ( Gangster {idd, f, t, s} );
+}</programlisting></para>
+        <para>Ha a visszatérési értékünk 4, az azt jelenti, hogy egy gengszter minden adatát
+            beolvastuk, az adatok validak voltak és létrehoztunk egy új gangster objektumot, amit
+            hozzáfűzünk a "gangsters" vektorhoz. Az 'nn' változó a beolvasott adatok számát tárolja.
+            Erre azért van szükség, hogy a "data" karakter tömbből ne olvassuk be kétszer ugyanazt
+            az adatot.</para>
+    </section>
+    <section>
+        <title>SamuCam</title>
+        <para/>
+        <para>A feladat az volt, hogy mutassunk rá a webcam (pl. Androidos mobilod) kezelésére ebben
+            a projektben: https://github.com/nbatfai/SamuCam.</para>
+        <para>A SamuCam webkameráról olvas le arcokat.</para>
+        <para>Letöltéshez a következő parancsra lesz
+            szükség:<programlisting>git clone https://github.com/nbatfai/SamuCam.git</programlisting></para>
+        <para>A letöltött mappába a
+            belépve:<programlisting>wget https://github.com/Itseez/opencv/raw/master/data/lbpcascades/ ←-
+lbpcascade_frontalface.xml</programlisting></para>
+        <para>Erre azért van szükség, mivel a program alapja az arcfelismerés, amit a
+            cv::CascadeClassfier osztály tesz lehetővé. Ezen a fájlon keresztül adjuk meg neki, hogy
+            milyen felismerést szeretnénk használni. Az emberi arcot a "faceClassifier" objektum
+            segítségével ismeri fel a kamera képén, amit a képernyőn meg is jelenít.</para>
+        <para>Qt-s
+            mappából:<programlisting>~/Qt/5.9.8/gcc_64/bin/qmake SamuLife.pro</programlisting></para>
+        <para>Ezután már csak a "make" parancsot kell használnunk és indítható is a program.</para>
+        <para> Ahhoz, hogy hozzá tudjunk férni a kameránk áltak biztosított adatokhoz, a
+                <classname>cv::VideoCapture</classname> osztály van segítségünkre. Ahhoz, hogy
+            megnyissuk a webkamera servere által biztosított felvételt, a
+                <function>SamuCam::openVideoStream()</function> függvényt használjuk. </para>
+        <para>A kameránk által biztosított adatok hozzáféréséhez a cv::VideoCapture osztályra lesz
+            szükség. A SamuCam::openVideoStream() függvénnyel pedig a webkamera szervere által
+            biztosított felvétel megnyitásához lesz szükség.</para>
+        <para>
+            <programlisting language="c++"><![CDATA[
+void SamuCam::openVideoStream()
+{
+    videoCapture.open ( videoStream );
+    videoCapture.set ( CV_CAP_PROP_FRAME_WIDTH, width );
+    videoCapture.set ( CV_CAP_PROP_FRAME_HEIGHT, height );
+    videoCapture.set ( CV_CAP_PROP_FPS, 10 );
+}]]>
+            </programlisting>
+        </para>
+        <para>Az open függvény paraméterként megkaphatja a kameránk számát (alapértelmezett: 0),
+            videó fájlt vagy (ahogy a mi példánkban is) IP címet is. A "videoCapture" objektum
+            tulajdonságait a "set" függvénnyel adjuk meg. A mi példánkban a méret és az FPS szám van
+            megadva.</para>
+        <para>Az arcfelismerés kezelését a "SamuCam" osztály "run" függvénye végzi.</para>
+        <para>
+            <programlisting language="c++"><![CDATA[
+void SamuCam::run()
+{
+    cv::CascadeClassifier faceClassifier;
+    std::string faceXML = "lbpcascade_frontalface.xml"; // https://github.com/Itseez/opencv/tree/master/data/lbpcascades
+    if ( !faceClassifier.load ( faceXML ) )
+    {
+        qDebug() << "error: cannot found" << faceXML.c_str();
+        return;
+    }
+    cv::Mat frame;
+    while ( videoCapture.isOpened() )
+    {
+        QThread::msleep ( 50 );
+        while ( videoCapture.read ( frame ) )
+        {
+            if ( !frame.empty() )
+            {
+                cv::resize ( frame, frame, cv::Size ( 176, 144 ), 0, 0, cv::INTER_CUBIC );
+                std::vector<cv::Rect> faces;
+                cv::Mat grayFrame;
+                cv::cvtColor ( frame, grayFrame, cv::COLOR_BGR2GRAY );
+                cv::equalizeHist ( grayFrame, grayFrame );
+                faceClassifier.detectMultiScale ( grayFrame, faces, 1.1, 4, 0, cv::Size ( 60, 60 ) );
+                if ( faces.size() > 0 )
+                {
+                    cv::Mat onlyFace = frame ( faces[0] ).clone();
+                    QImage* face = new QImage ( onlyFace.data,
+                                                onlyFace.cols,
+                                                onlyFace.rows,
+                                                onlyFace.step,
+                                                QImage::Format_RGB888 );
+                    cv::Point x ( faces[0].x-1, faces[0].y-1 );
+                    cv::Point y ( faces[0].x + faces[0].width+2, faces[0].y + faces[0].height+2 );
+                    cv::rectangle ( frame, x, y, cv::Scalar ( 240, 230, 200 ) );
+                    emit  faceChanged ( face );
+                }
+                QImage*  webcam = new QImage ( frame.data,
+                                                frame.cols,
+                                                frame.rows,
+                                                frame.step,
+                                                QImage::Format_RGB888 );
+                emit  webcamChanged ( webcam );
+            }
+            QThread::msleep ( 80 );
+        }
+        if ( ! videoCapture.isOpened() )
+        {
+            openVideoStream();
+        }
+    }
+}]]>
+            </programlisting>
+        </para>
+        <para>Számunkra a "while" ciklus a lényeg a fenti kódcsipetből, ami addig ismétlődik, amíg a
+            kamera nyitva van. A cv::Mat osztályú objektum segítségével a képkockákat eltároljuk
+            többdimenziós tömben. Beolvassuk a "frame" tartalmát. Ha ez üres, akkor beolvasunk a
+            kamera képéről egy arcot. A "detectMultiScale" függvénnyel különböző méretű objektumokat
+            tudunk felismerni, amik a mi esetünkben arcok lesznek. Az eredményt egy vektorban
+            tárolja négyzetek formájában. Az első felismert objektumot kiolvassuk, képpé alakítjuk,
+            majd jelezzük, hogy megváltozott a kamera képe.</para>
+    </section>
+    <section>
+        <title>BrainB</title>
+        <para>A feladatunk, hogy mutassuk be a Qt slot-signal mechanizmust ebben a projektben:
+            https://github.com/nbatfai/esport-talent-search</para>
+        <para>A BrainB egy már jól ismert projekt, aminek a célja a tehetségkutatás az esportban. Az
+            játékokban előforduló karakter elvesztést szimulálja. A program 10 percig fut, ezidő
+            alatt a feladatunk, hogy a bal egérgombot lenyomva Samu Entropyn tartsuk az egeret. A
+            futás végeztével megtekinthetjük a statisztikákat. </para>
+        <para>A használathoz a következő parancsok
+            szükségesek:<programlisting>sudo apt-get install libqt4-dev
+sudo apt-get install opencv-data
+sudo apt-get install libopencv-dev</programlisting></para>
+        <para>A forráskódot tartalmazó mappában kiadjuk a következő
+            parancsot:<programlisting>~/Qt/5.12.2/gcc_64/bin/qmake -project</programlisting></para>
+        <para>Ez létrehozza a project fájlt, amire kiadjuk a következő
+            parancsot:<programlisting>~/Qt/5.12.2/gcc_64/bin/qmake BrainB.pro</programlisting></para>
+        <para>Ezután ha kiadunk egy "make" parancsot, már csak a futtatni kell a
+            programot.<programlisting>./BrainB</programlisting></para>
+        <para>Nézzük a slot-signal mechanizmust:</para>
+        <para>Qt-ben a slotokat és signalokat az objektumok közötti kommunikációra használjuk. GUI
+            programozásnál ha egy elem megváltozik, akkor erről a többi elemnek értesülnie kell.
+            Például ha megnyomjuk a bezár gombot, akkor hívódjon meg az ablak close() funkciója. A
+            Qt ehhez használja a slot-signal mechanizmust. Egy adott esemény bekövetkeztekor egy
+            signal hajtódik végre. Számos előre definiált signal van. A slot egy funkció, ami a
+            megfelelő signal jelzésére hajtódik végre.</para>
+        <para>Signal - olyan függvény,ami csak deklarálva van, nincs definiálva, nincs visszatérési
+            értéke, azonban vannak paraméterei.</para>
+        <para>Slot - függvényre hasonlítanak, definiáltak, vannak paramétereik, meghívhatóak,
+            viszont nincs visszatérési értékük.</para>
+        <para>A kompatibilis signal-slot párok összekapcsolhatóak. Ahhoz, hogy kompatibilisek
+            legyenek a paramétereik típusának kell megegyeznie vagy a slotnak kell paraméter
+            nélkülinek lennie (ilyenkor a signal paraméterei átadhatóak).</para>
+        <para>A slot-signal mechanizmus a BrainB
+            programban:<programlisting>BrainBWin::BrainBWin ( int w, int h, QWidget *parent ) : QMainWindow ( ←-
+    parent )
+{
+// setWindowTitle(appName + " " + appVersion);
+// setFixedSize(QSize(w, h));
+    statDir = appName + " " + appVersion + " - " + QDate::currentDate() ←-
+        .toString() + QString::number ( QDateTime:: ←-
+        currentMSecsSinceEpoch() );
+    brainBThread = new BrainBThread ( w, h - yshift );
+    brainBThread->start();
+    connect ( brainBThread, SIGNAL ( heroesChanged ( QImage, int, int ) ←-
+        ),
+        this, SLOT ( updateHeroes ( QImage, int, int ) ) );
+    connect ( brainBThread, SIGNAL ( endAndStats ( int ) ),
+        this, SLOT ( endAndStats ( int ) ) );
+}</programlisting></para>
+        <para>Ebből a példából számunkra a connect funkció lényeges. Ennek a segítségével kötjük
+            össze a signalokat a slotokkal. A paraméterek sorrendben: signal-t küldő objektum;
+            signal, amit kezelni szeretnénk; signal-t kezelő objektumra mutató pointer; slot, ami a
+            kiváltott signal-t fogja kezelni.</para>
+        <para>A lenti példában láthatjuk, hogyha a "brainBThread" objektum "heroesChanged" signal-ja
+            kiváltódik, akkor a "BrainBWin" objektum kezelje "updateHeroes"
+            slottal.<programlisting>connect ( brainBThread, SIGNAL ( heroesChanged ( QImage, int, int ) ←-
+    ),
+        this, SLOT ( updateHeroes ( QImage, int, int ) ) );</programlisting></para>
+    </section>
+    <section>
+        <title>FUTURE tevékenység editor</title>
+        <para>A feladatunk az volt, hogy javítsunk valamit az ActivityEditor.java JavaFX
+            programon.</para>
+        <para>Program forrása: <link
+                xlink:href="https://github.com/nbatfai/future/tree/master/cs/F6"/></para>
+        <para>A programban alapból a jobb klikk lenyomásával új tevékenység vagy props fájl jön
+            létre a könyvtárszerkezetben. Ennek elkerülése érdekében erre a folyamatra egy új
+            billentyűkombinációt
+            implementáltam.<programlisting>javafx.scene.Scene scene = FileTree.this.getScene();
+
+    KeyCombination kc1 = new KeyCodeCombination(KeyCode.N, KeyCombination. ←-
+        CONTROL_DOWN);
+    Runnable rn1 = ()-> {
+        System.out.println("Ctrl N");
+        javafx.scene.control.TreeItem&lt;java.io.File> item = FileTree.this. ←-
+            getSelectionModel().getSelectedItem();
+        System.out.println(item.getValue());
+        java.io.File file =item.getValue();
+        java.io.File f = new java.io.File(file.getPath() + System.getProperty("file ←-
+            .separator") + "Új altevékenység");
+        if (f.mkdir()) 
+            {
+                javafx.scene.control.TreeItem&lt;java.io.File> newAct
+                    = new FileTreeItem(f, new javafx.scene.image.ImageView(actIcon));
+                item.getChildren().add(newAct);
+            } else {
+                System.err.println("Cannot create " + f.getPath());
+            }
+    };
+    scene.getAccelerators().put(kc1, rn1);</programlisting></para>
+        <para>Új tevékenységet hozunk létre a CTR+N kombinációra. Ez egy új mappát hoz létre a
+            könyvtárszerkezetben. Ezzel gyakolratilag megkapta a jobb klikk egyik funkcióját, amit a
+            feladat elején is említettem, viszont a jobb klikkel új props fájlt is lehetett
+            létrehozni. Ehhez szintén implementálunk egy
+            billentyűkombinációt.<programlisting>    KeyCombination kc2 = new KeyCodeCombination(KeyCode.M, KeyCombination. ←-
+        CONTROL_DOWN);
+    Runnable rn2 = ()-> {
+        System.out.println("Ctrl M");
+        javafx.scene.control.TreeItem&lt;java.io.File> item = FileTree.this. ←-
+            getSelectionModel().getSelectedItem();
+        System.out.println(item.getValue());
+        java.io.File file = getTreeItem().getValue();
+        java.io.File f = new java.io.File(file.getPath() + System.getProperty("file ←-
+            .separator") + "Új altevékenység tulajdonságok");
+        try {
+            f.createNewFile();
+        } catch (java.io.IOException e) {
+            System.err.println(e.getMessage());
+        }
+        javafx.scene.control.TreeItem&lt;java.io.File> newProps
+            = new FileTreeItem(f, new javafx.scene.image.ImageView(actpropsIcon));
+        item.getChildren().add(newProps);
+    };
+    scene.getAccelerators().put(kc2, rn2);</programlisting></para>
+        <para>Ez a hot key a CTR+M lesz. Az eltérés csupán annyi, hogy könyvtár helyett egy új props
+            fájlt adunk hozzá a faszerkezethez.</para>
+    </section>
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
