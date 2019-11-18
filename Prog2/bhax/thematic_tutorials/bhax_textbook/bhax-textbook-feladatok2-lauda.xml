@@ -176,6 +176,116 @@ var = 1.2909944487358056
         <para>Láthatjuk, hogy a teszt sikeres volt.</para>
     </section>
     <section>
-        <title/>
+        <title>Android játék</title>
+        <para>A feladat az volt, hogy készítsünk egy tetszőleges, egyszerű android játékot. Az
+            általam készített játék egyben az is, amit a legegyszerűbbnek vélek: Találd ki a számot
+            (Higher Lower) játék. Segítségül és alapul az alábbi videó szolgált:</para>
+        <para><link xlink:href="https://www.youtube.com/watch?v=I9YU0bfxev0"/></para>
+        <para>Először megtervezzük a felhasználói felületet. A játékunk UI-ja nagyon egyszerű lesz a
+            következő nézetekkel:<itemizedlist>
+                <listitem>
+                    <para>TextView, amely lehetővé teszi számunkra, hogy minden kísérlet után
+                        üzenetet jelenítsünk meg a felhasználó számára. A megjelenő üzenet vagy „túl
+                        magas”, vagy „túl alacsony” lesz.</para>
+                </listitem>
+                <listitem>
+                    <para>Az EditText lehetővé teszi a játékos számára annak a számnak a beírását,
+                        ami szerinte a helyes szám lesz</para>
+                </listitem>
+                <listitem>
+                    <para>Egy gomb, ami lehetővé teszi a játékos számára, hogy érvényesítse ("adja
+                        le") a tippjét.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Az <emphasis role="italic">activity_main.xml</emphasis> fájl a következő képen néz
+            ki:<programlisting>&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.ssaurel.higherlower.MainActivity">
+
+    &lt;TextView
+        android:id="@+id/msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:text="@string/start_msg"
+        android:textSize="22sp"
+        android:textStyle="bold"/>
+
+    &lt;EditText
+        android:id="@+id/numberEnteredEt"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/msg"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:inputType="number"/>
+
+    &lt;Button
+        android:id="@+id/validate"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/numberEnteredEt"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="60dp"
+        android:text="Validate"/>
+
+&lt;/RelativeLayout></programlisting></para>
+        <para>Ezután megírjuk a játék "logikáját" Java nyelven, tehát azt az algoritmust, ami a
+            háttérben dolgozni fog. </para>
+        <para>A játék elindításához egy newGame () metódust írunk, amelyben a Random Java standard
+            objektum nextInt statikus módszerét használjuk az 1 és 1000 közötti szám kiválasztására.
+            Ezután egy kezdő üzenetet jelenítünk meg a TextView-ban. Töröljük az EditText szöveget,
+            amelyet a játékos fog használni a kitalálni kívánt szám megadására. Végül nullára
+            állítottuk a numberTries
+            tulajdonságot.<programlisting>private void newGame() {
+  numberToFind = RANDOM.nextInt(MAX_NUMBER) + 1;
+  msgTv.setText(R.string.start_msg);
+  numberEnteredEt.setText("");
+  numberTries = 0;
+}</programlisting></para>
+        <para>Ezután szükségünk van egy metódusra a játékos által megadott szám érvényesítésére. A
+            szám érvényesítése azt jelenti, hogy ellenőrizzük, hogy a szám megegyezik-e a
+            numberToFind egész számmal. Ha igen, akkor egy üzenetet jelenítünk meg, amely jelzi a
+            játékosnak, hogy megtalálja a számot és a kísérletek számát.</para>
+        <para>Ha nem, akkor ellenőrizjük, hogy a megadott szám alacsonyabb vagy nagyobb-e, mint a
+            numberToFind egész szám. Ez lehetővé teszi, hogy megjelenítsük a felhasználó számára a
+            „Túl magas” vagy a „Túl alacsony” üzenetet a felhasználói felületünk TextView-ban.
+            Nyilvánvaló, hogy nem felejtjük el, hogy minden alkalommal megnöveljük a kísérletek
+            számát, amikor az validate() metódust meghívódik.</para>
+        <para>A validate()
+            metódus:<programlisting>private void validate() {
+  int n = Integer.parseInt(numberEnteredEt.getText().toString());
+  numberTries++;
+
+  if (n == numberToFind) {
+    Toast.makeText(this, "Congratulations ! You found the number " + numberToFind +
+         " in " + numberTries + " tries", Toast.LENGTH_SHORT).show();
+    newGame();
+  } else if (n > numberToFind) {
+    msgTv.setText(R.string.too_high);
+  } else if (n &lt; numberToFind) {
+    msgTv.setText(R.string.too_low);
+  }
+}</programlisting></para>
+        <para>A teljes forráskód megtalálható az alábbi linken:</para>
+        <para><link
+                xlink:href="https://github.com/mesterakos963/Prog2/tree/master/Prog2/Android%20game"
+            /></para>
+        <para>Futás közben:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/androidfutas.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/tulsok.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
     </section>
 </chapter>                
