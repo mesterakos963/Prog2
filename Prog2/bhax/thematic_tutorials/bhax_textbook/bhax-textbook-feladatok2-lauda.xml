@@ -1,0 +1,181 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, !</title>
+    </info>
+    <section>
+        <title>Port scan</title>
+        <para>A feladat az volt, hogy mutassunk rá ebben a port szkennelő forrásban a kivételkezelés
+            szerepére!</para>
+        <para>Forrás: <link
+                xlink:href="https://www.tankonyvtar.hu/hu/tartalom/tkt/javat-tanitok-javat/ch01.html#id527287"
+            /></para>
+        <para>Az alábbi program a parancssori argumentumként kapott gép 1024-nél kisebb portjával
+            próbál TCP/IP kapcsolatat létrehozni. Sikeres futtatás esetén az adott gépen egy
+            szerverfolyamat figyeli az adott portot.</para>
+        <programlisting language="java"><![CDATA[
+public class KapuSzkenner {
+    public static void main(String[] args) {
+        
+        for(int i=0; i<1024; ++i)
+            
+            try {
+                
+                java.net.Socket socket = new java.net.Socket(args[0], i);
+                
+                System.out.println(i + " figyeli");
+                
+                socket.close();
+                
+            } catch (Exception e) {
+                
+                System.out.println(i + " nem figyeli");
+                
+            }
+    }
+    
+}]]>
+           </programlisting>
+        <para>A kapcsolódáshoz a "Socket" típusú objektumra van szükség, melynek konstruktorába kell
+            megadni az IP-címet és a portot. Mint azt már említettem, sikeres kapcsolódás esetén egy
+            szerver fogja figyelni az adott portot, de mi történik akkor, ha a kapcsolódás
+            sikertelen?</para>
+        <para>Itt jön a képbe a kivételkezelés. Ebben az esetben a "Socket" konstruktora
+            "IOException" kivételt dob. Ha a programunk hibát ad vissza, akkor a terminálba kiírjuk,
+            hogy az adott port nem figyelt. Kivételkezelés nélkül is tudjuk lefordítani a
+            programot.</para>
+        
+    </section>
+    <section>
+        <title>AOP</title>
+        <para>A feladat az, hogy szőjünk bele egy átszövő vonatkozást az első védési programod Java
+            átiratába!</para>
+        <para>Ebben a feladatban az átszövés orientált programozással fodunk ismerkedtünk meg,
+            amihez az AspectJ nyelvet fogjuk használtuk. Az átszövés lényege, hogy anélkül tudunk
+            változtatni egy korábban írt program működésén, hogy a forrsákódhoz hozzányúlnánk. Ehhez
+            egy szövést kell írni, amivel pl egy függvény működésén változtatunk.</para>
+        <para>Először 3 fogalommal kell megismerkednünk:</para>
+        <para>Kapcsolódási pont - az eredeti program egyik függvénye.</para>
+        <para>Vágási pont - a csatlakozási pontokat jelöljük vele.</para>
+        <para>Tanács - azt tartalmazza, hogy hogyan szeretnénk módosítani az eredeti program
+            működésén.</para>
+        <para>A fát preorder szeretnénk bejárni. Ezt már korábban megcsináltuk, azonban akkor a
+            forráskódot közvetlenül módosítottuk. Nézzük az "Aspect.aj" tartalmát.</para>
+        <programlisting language="java"><![CDATA[
+privileged aspect Aspect{
+    void around(LZWBinFa fa, LZWBinFa.Csomopont elem, java.io.BufferedWriter os):
+        call(public void LZWBinFa.kiir(LZWBinFa.Csomopont, java.io.BufferedWriter)) 
+            && target(fa) && args(elem, os){
+        if (elem != null)
+        {
+            try{
+                ++fa.melyseg;
+                for (int i = 0; i < fa.melyseg; ++i)
+                    os.write("---");
+                os.write(elem.getBetu () + "(" + (fa.melyseg - 1) + ")\n");
+                fa.kiir(elem.egyesGyermek (), os);
+                fa.kiir(elem.nullasGyermek (), os);
+                --fa.melyseg;
+            }
+            catch(java.io.IOException e){
+                System.out.println("Csomópont írása nem sikerült.");
+            }
+        }
+    }
+}]]>
+</programlisting>
+        <para>Az eredeti Java forráshoz képest nem sok eltérés van. Ami újdonságként feltűnhet, az a
+            "privilaged". Ez ahhoz szükséges, hogy az aspektus hozzá tudjon férni az osztályok
+            privát tagjához. Azt, hogy éppen aspektust írunk, nem osztályt, a "aspect" kulcsszó
+            használatával tudjuk megadni.
+            <programlisting>void around(LZWBinFa fa, LZWBinFa.Csomopont elem, java.io.BufferedWriter os):
+    call(public void LZWBinFa.kiir(LZWBinFa.Csomopont, java.io.BufferedWriter))</programlisting></para>
+        <para>Az "around" függvény paraméterének megadjuk az LZWBinFa objektumot, melyen keresztül
+            elérjük a nem statikus tagokat. Ezután megadjuk, hogy melyik függvény helyett hívódjon
+            meg az "around" függvény. Ezt követően az "args" kulcsszóval megadjuk, hogy az "around"
+            mely paramétereit szeretnénk átadni a "kiir" függvénynek, majd '&amp;&amp;' elválasztva
+            azt, "target" kulcsszóval hogy melyik objektumra szeretnénk végrehajtani. Az "around"
+            törzse a már ismert kódrészletet tartalmazza.</para>
+        <para>Futtatás:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/aspectkesz.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Alaprogram kimenet:</para>
+        <programlisting>
+---------1(2)
+------------0(3)
+------------------1(5)
+---------------0(4)
+------1(1)
+---------0(2)
+------------0(3)
+---------------0(4)
+---/(0)
+---------1(2)
+------0(1)
+---------0(2)
+------------0(3)
+depth = 5
+mean = 3.5
+var = 1.2909944487358056
+            </programlisting>
+        <para>Aspektus használatával:</para>
+        <programlisting>
+---/(0)
+------1(1)
+---------1(2)
+------------0(3)
+---------------0(4)
+------------------1(5)
+---------0(2)
+------------0(3)
+---------------0(4)
+------0(1)
+---------1(2)
+---------0(2)
+------------0(3)
+depth = 5
+mean = 3.5
+var = 1.2909944487358056
+            </programlisting>
+    </section>
+    <section>
+        <title>Junit teszt</title>
+        <para>A
+            https://progpater.blog.hu/2011/03/05/labormeres_otthon_avagy_hogyan_dolgozok_fel_egy_pedat</para>
+        <para>poszt kézzel számított mélységét és szórását dolgozd be egy Junit tesztbe.</para>
+        <para>A Junit egy a Java nyelvhez kifejleszettet egységtesztelő keretrendszer. Segítségével
+            automatizált módon tudjuk tesztelni, hogy a programunk a várt módon működik-e. Mi a
+            mélység, szórás és átlag értékét fogjuk ellenőrizni, hogy megfelelnek-e a posztban
+            látottaknak. </para>
+        <para>A posztban felhasznált bitsorozatot megadjuk az
+            LZWBinFa-nak:<programlisting>public class BinfaTest {
+    LZWBinFa binfa = new LZWBinFa();
+    @org.junit.Test
+    public void tesBitFeldolg() {
+    for (char c : "01111001001001000111".toCharArray()) 
+    {
+        binfa.egyBitFeldolg(c);
+    }</programlisting></para>
+        <para>Az egyBitFeldolg metódussal feldolgozzuk az inputot karakterenént. Ezt követően jön a
+            feladat lényegi része, a Junit
+            teszt.<programlisting>    org.junit.Assert.assertEquals(4, binfa.getMelyseg(), 0.0);
+    org.junit.Assert.assertEquals(2.75, binfa.getAtlag(), 0.001);
+    org.junit.Assert.assertEquals(0.957427, binfa.getSzoras(), 0.0001);</programlisting></para>
+        <para>A bitsorozat feldolgozása után ellenőrizzük le, hogy a BinFa objektum és posztban
+            szereplő értékek megegyeznek-e. Ha igen, akkor a program jól működött, a teszt sikeres
+            volt. Ha nem egyeznek az értékek, akkor "AssertionError"-t kapunk és a teszt
+            sikertelen.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/junitkesz.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Láthatjuk, hogy a teszt sikeres volt.</para>
+    </section>
+    <section>
+        <title/>
+    </section>
+</chapter>                
