@@ -1,0 +1,135 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Calvin!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+    <section>
+        <title>MNIST</title>
+        <para>Az alap feladat megoldása, +saját kézzel rajzolt képet is ismerjen fel,</para>
+        <para>https://progpater.blog.hu/2016/11/13/hello_samu_a_tensorflow-bol Háttérként ezt
+            vetítsük le:</para>
+        <para>https://prezi.com/0u8ncvvoabcr/no-programming-programming/</para>
+        <para>A program futtatásakor rengeteg error-ba ütközünk. Ezek javítása után a program gond
+            nélkül fog futni. Tanítás után először a W_0 súlyokat ábrázolja. Ez adja meg 0
+            valószínűségét. A kapott ábra fogja mutatni, hogy a program milyennek "képzeli el" vagy
+            milyennek "tanulta meg" a 0  számjegyet.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/nulla.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Ezután felismertetjük vele a tesztképeket:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/mnist4es1.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Ezután a saját kézzel írott nyolcasunkat is felismertetjük vele, ahogy a feladat
+            kérte.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/kezi8.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Amint azt láthatjuk a program a helyesen ismerte fel a nyolcast.</para>
+    </section>
+    <section>
+        <title>Deep MNIST</title>
+        <para>A feladatunk ugyanaz, mint az előbb, csupán a mély változatot kell megcsinálnunk. Ez
+            annyit tesz, hogy több köztes réteg, van, amivel megszűrjük az adatot. Lényegesen megnő
+            a tanulási idő. Akár 8-10 órát is igénybevehet.</para>
+        <para>Csakúgy, mint az előző feladatban, itt is először meg kell nyitni a vizsgálandó képet,
+            majd dekódolni. A kimeneti kép color channel-je grayscale lesz. Ezt a decode_png()
+            függvénynél tudjuk beállítani az 1-es paraméter
+            megadásával.<programlisting>def readimg():
+    file = tf.read_file("sajat8a.png")
+    img = tf.image.decode_png(file, 1)
+    return img</programlisting></para>
+        <para>A hosszú tanítási folyamat után leteszteljük a képünket az előző feladatban látottak
+            alapján.</para>
+        <programlisting>    img = readimg()
+    image = img.eval()
+    image = image.reshape(28*28)
+    matplotlib.pyplot.imshow(image.reshape(28, 28), cmap=matplotlib.pyplot.cm.binary)
+    matplotlib.pyplot.savefig("8.png")
+    matplotlib.pyplot.show()
+    classification = sess.run(tf.argmax(y_conv, 1), feed_dict={x: [image], keep_prob: 1.0})</programlisting>
+        <para>Az előző példában használt 8-as képet használtam fel. Itt annyi történik, hogy az
+            y_conv-ból kiválasztjuk a legnagyobb értékkel rendelkező indexet, tehát azt, amelyik a
+            legnagyobb valószínűséggel illeszkedik a karakterünkre.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/deepmnist.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>A hosszú futásidő oka az iterációk számában keresendő. 1000 helyett most 20.000
+            iterációt használunk illetve bonyolultabb modellt. Hogy ne kelljen a tanítási időre
+            várni a tanítási állapot
+            kimenthető.<programlisting>    saver = tf.train.Saver()
+    saver.save(sess, "./model/model.ckpt")</programlisting></para>
+        <para>Minden változó értékét kimentjük az adott fájlba (model.ckpt).</para>
+    </section>
+    <section>
+        <title>Androig telefonra a TF objektum detektálója</title>
+        <para>Talán ez volt a legkönnyebb feladat. Csupán annyi volt a dolgunk, hogy klónozzuk le az
+            alábbi repót:</para>
+        <para><link
+                xlink:href="https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/android"
+            /></para>
+        <para>Ebből android studióban csinálunk egy apk-t és telepítjük telefonra.</para>
+        <para>Itt van 2 kép használat közben:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata
+                        fileref="../../../../K%C3%A9pek/72523729_2509520082646023_5843691060798160896_n.jpg"
+                    />
+                </imageobject>
+            </inlinemediaobject></para>
+        <para/>
+        <informalfigure>
+            <mediaobject>
+                <imageobject>
+                    <imagedata
+                        fileref="../../../../K%C3%A9pek/76781364_425836268354663_224715712583696384_n.jpg"
+                    />
+                </imageobject>
+            </mediaobject>
+        </informalfigure>
+        <para>Láthatjuk, hogy a technológia egészen jól működik. Felismeri a tárgyat és megmondja,
+            hogy hány százalékban biztos abban, amit lát.</para>
+    </section>
+    <section>
+        <title>CIFAR-10</title>
+        <para>A feladatunk szinte megegyezik az első kettővel, csupán annyi a különbség, hogy számok
+            helyett most tárgyakat, élőlényeket kell felismertetni a programunkkal. A képek mostmár
+            RGB-sek illetve a felbontásuk 28x28-ról 32x32-re nő. Az adatbázisban alapból 10 dologról
+            találhatóak képek.</para>
+        <programlisting>    train_X = train_X.reshape(-1,32,32,3)
+    test_X = test_X.reshape(-1,32,32,3)</programlisting>
+        <para>Amint láthatjuk az előző feladathoz képest a paraméterek megváltoztak: a képek mérete,
+            amint azt az előb is írtam, az utolsó paraméter (3) pedig azt adja meg, hogy most RGB
+            képekkel fogunk dolgozni.</para>
+        <para>Több neuront használunk fel és változnak az input_shape függvény paraméterei
+            is.<programlisting>    cifar_classes = [’airplane’, ’automobile’, ’bird’, ’cat’, ’deer’, ’ ←-
+    dog’, ’frog’, ’horse’, ’ship’, ’truck’]</programlisting></para>
+        <para>Itt található az a 10 dolog, amit az adatbázis alapból tartalmaz (feladat elején
+            említettem).</para>
+        <para>Nézzük meg futás közben:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/car.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/cifardog1.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Látható, hogy nem túl pontos a program, azonban képes volt minden általam kipróbált
+            képet felismerni még így is.</para>
+    </section>                     
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
+</chapter>                
