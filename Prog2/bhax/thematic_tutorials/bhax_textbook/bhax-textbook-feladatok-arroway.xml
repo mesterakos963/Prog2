@@ -1,0 +1,195 @@
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+    <info>
+        <title>Helló, Arroway!</title>
+        <keywordset>
+            <keyword/>
+        </keywordset>
+    </info>
+
+    <section>
+        <title>OO szemlélet</title>
+        <para> </para>
+        <para> Megoldás forrása: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloArroway/PolarGenerator.java"
+            /></para>
+        <para>Ez a feladat a polártranszformáció Java implementációja.</para>
+        <para> A program működése a következő: ha értéket kell odaadnia vagy visszatérítenie, akkor
+            előbb megnézi, hogy van-e tárolt. Ha van, akkor azt adja oda, ha nincs, akkor generál
+            kettőt. Az egyiket eltárolja, a másikat visszaadja, a logikai változó értékét pedig
+            hamisra állítja.</para>
+        <para>Az OpenJDK Random.java forrásban is megtalálható ez a függvény.</para>
+        <programlisting language="c++"><![CDATA[
+public synchronized double nextGaussian() {
+if (haveNextNextGaussian){
+    haveNextGaussian = false;
+    return nextNextGaussian;
+} else {
+    double v1, v2, s;
+    do {
+            v1 = 2 * nextDouble() - 1;
+            v2 = 2 * nextDouble() - 1; 
+        } while (s >= 1 || s == 0);
+        double multiplier = StrictMath.sqrt(-2 * StrictMath.log(s)/s);
+        nextNextGaussian = v2 * multiplier;
+        haveNextGaussian = true;
+        return v1 * multiplier;
+    }
+}
+]]></programlisting>
+
+        <para>Az egyik különbség a mi programunk és az OpenJDK Random.java forrásban található
+            között az, hogy mi a StrictMath osztály helyett a Math osztályt használjuk. Ez csupán a
+            pontosságban tér el, mivel a StrictMath osztály bitpontos eredményt biztosít. A Math
+            osztály "kompromisszumot köt", azaz kevésbe pontos, viszont cserébe gyorsabb.</para>
+        <para>Ami a legobban szembeötlik, az metódus létrehozásánál használt synchronized előtag. Ez
+            szinkronizálttá teszi a metódust, ami az jelenti, hogy ha több szál hívja meg egy
+            objektumra, akkor csak egy hajtódik végre és biztosítja, hogy az ugyanarra az objektumra
+            meghívott metódusok előtt fusson le.</para>
+    </section> 
+    
+    <section>
+        <title>"Gagyi"</title>
+        <para>
+            Megoldás forrása:                
+        </para>
+        <para>1)<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloArroway/Gagyi128.java"
+            /></para>
+        <para>2)<link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloArroway/Gagyi129.java"
+            /></para>
+        <para>A (while (x &lt;= t &amp;&amp; x >= t &amp;&amp; t != x) feltétel -128 esetén nem
+            teljesül, azonban -129 esetén igen. Miért van ez?</para>
+        <para> </para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/gagyi.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Erre a kérdésre választ az Integer.java forrásban találunk, amit ha megnyitunk, akkor
+            láthatjuk, hogy -128 és az általunk beállítható "high" érték esetén előre elkészített
+            Integer objektumok pool-jából kapjuk meg az értéknek megfelelő objektumot, így -128-ra
+            kétszer adja vissza ugyanazt az objektumot, amíg -129 esetén már egy új integer-t fogunk
+            kapni, azaz igazzá válik az x! = t kritérium, mivel két különböző című objektumot kapunk
+            így meg.</para>
+    </section>
+    
+    <section>
+        <title>Yoda</title>
+        <para> Megoldás forrása: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloArroway/Yoda.java"
+            /></para>
+        <para>A feladat lényege, hogy java.lang.NullPointerEx-el álljon le a program, ha nem
+            követjük a Yoda conditions-t. Ebben a kódban a string, amihez hasonlítanánk egy null
+            pointer, tehát nem a program nem tudja összehasonlítani és hibával lép ki.</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/canva-photo-editor.png"/>
+                </imageobject>
+            </inlinemediaobject></para>
+    </section> 
+    
+    <section>
+        <title>Kódolás from scratch</title>
+        <para> Megoldás forrása: <link
+                xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloArroway/PiBBP.java"
+            /></para>
+        <para>Ez a program a Bailey-Borwein-Plouffe formulát valósítja meg, ami a következő képen
+            néz ki:</para>
+        <para>A programnak semmilyen különlegessége nincs, csupán egy érdekes és kihívást jelentő
+            feladat kezdő Java programozók számára, mivel remekül bevezet az objektumorientált
+            tervezésbe.</para>
+        <informalfigure>
+            <para>Futás után a következőt kapjuk:</para>
+            <para><inlinemediaobject>
+                    <imageobject>
+                        <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/scratch.jpg"/>
+                    </imageobject>
+                </inlinemediaobject></para>
+            <para>
+                <programlisting>public class PiBBP {
+    String d16PiHexaJegyek;
+    public PiBBP(int d) {
+        
+        double d16Pi = 0.0d;
+        
+        double d16S1t = d16Sj(d, 1);
+        double d16S4t = d16Sj(d, 4);
+        double d16S5t = d16Sj(d, 5);
+        double d16S6t = d16Sj(d, 6);
+        
+        d16Pi = 4.0d*d16S1t - 2.0d*d16S4t - d16S5t - d16S6t;
+        
+        d16Pi = d16Pi - StrictMath.floor(d16Pi);
+        
+        StringBuffer sb = new StringBuffer();
+        
+        Character hexaJegyek[] = {'A', 'B', 'C', 'D', 'E', 'F'};
+        
+        while(d16Pi != 0.0d) {
+            
+            int jegy = (int)StrictMath.floor(16.0d*d16Pi);
+            
+            if(jegy&lt;10)
+                sb.append(jegy);
+            else
+                sb.append(hexaJegyek[jegy-10]);
+            
+            d16Pi = (16.0d*d16Pi) - StrictMath.floor(16.0d*d16Pi);
+        }
+        
+        d16PiHexaJegyek = sb.toString();
+    }
+    public double d16Sj(int d, int j) {
+        
+        double d16Sj = 0.0d;
+        
+        for(int k=0; k&lt;=d; ++k)
+            d16Sj += (double)n16modk(d-k, 8*k + j) / (double)(8*k + j);
+        return d16Sj - StrictMath.floor(d16Sj);
+    }
+    public long n16modk(int n, int k) {
+        
+        int t = 1;
+        while(t &lt;= n)
+            t *= 2;
+        
+        long r = 1;
+        
+        while(true) {
+            
+            if(n >= t) {
+                r = (16*r) % k;
+                n = n - t;
+            }
+            
+            t = t/2;
+            
+            if(t &lt; 1)
+                break;
+            
+            r = (r*r) % k;
+            
+        }
+        
+        return r;
+    }
+    public String toString() {
+        
+        return d16PiHexaJegyek;
+    }
+    public static void main(String args[]) {        
+        System.out.print(new PiBBP(1000000));
+    }
+}</programlisting>
+            </para>
+        </informalfigure>
+        <para>A PiBBP függvény számítja ki a {16ˆd Pi} = {4*{16ˆd S1} -2*{16ˆd S4} - {16ˆd S5} -
+            {16ˆd S6}} képletet és alakítja az eredményt hexadecimálisra és helyezi bele a
+            bufferbe.</para>
+        <para>A d16Sj számítja ki a képletben szereplő S1, S2, S3, S4 értékeket.</para>
+        <para>Az n16modk végzi a bináris hatványozást, hogy az S értékeket ki lehessen
+            számolni.</para>
+        <para>A main függvényben jön létre a PiBBP objektum és itt határozzuk meg a d értékét. </para>
+    </section> 
+</chapter>                

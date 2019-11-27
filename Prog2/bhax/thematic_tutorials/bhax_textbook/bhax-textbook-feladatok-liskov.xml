@@ -92,8 +92,8 @@
             0. pozíciótól számított 10^6, 107^, 10^8 darab jegyét határozzuk meg C, C++, Java és C#
             nyelveken és hasonlítsuk össze a futási idejüket.</para>
         <para>Mivel az algoritmus a "Kódolás from scratch" nevű feladatunkból származik, ezért most
-            nem ejtek szót a forrásról. Ebben a feladatban inkább a végeredmény a fonots, amit egy
-            táblázatba foglaltam.</para>
+            nem ejtek szót a forrásról. Ebben a feladatban inkább a végeredmény a fonots, amit a
+            lenti táblázatba foglaltam.</para>
         <para>Forrásfájlok:</para>
         <para>Java:<link
                 xlink:href="https://github.com/mesterakos963/Prog2/blob/master/Prog2/HelloLiskov/PiBBPBench.java"
@@ -128,21 +128,21 @@
                         <row>
                             <entry>10^6</entry>
                             <entry>2,001</entry>
-                            <entry/>
+                            <entry>2.218048 </entry>
                             <entry>2,54988</entry>
                             <entry>2,040878</entry>
                         </row>
                         <row>
                             <entry>10^7</entry>
                             <entry>23,5</entry>
-                            <entry/>
+                            <entry>26.349407</entry>
                             <entry>29,682</entry>
                             <entry>23,749305</entry>
                         </row>
                         <row>
                             <entry>10^8</entry>
                             <entry>268,231</entry>
-                            <entry/>
+                            <entry>303.937076 </entry>
                             <entry>336,813</entry>
                             <entry>273,46592</entry>
                         </row>
@@ -152,19 +152,25 @@
         <para>Java:</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/java.png"/>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/antioojava.jpg"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>C++:</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/cpp.png"/>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/antioocpp.jpg"/>
                 </imageobject>
             </inlinemediaobject></para>
         <para>C#:</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/cs.png"/>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/antioocsharp.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>C:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/antiooc.jpg"/>
                 </imageobject>
             </inlinemediaobject></para>
     </section>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       

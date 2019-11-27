@@ -1,4 +1,5 @@
-<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude" version="5.0" xml:lang="hu">
     <info>
         <title>Helló, Berner-Lee!</title>
         <keywordset>
@@ -51,10 +52,176 @@ Alkalmazott a = new Alkalmazott();
         <para>Java megkülönbözteti a referenciát és az imperatív programozási nyelvekben használt
             mutatót aképpen, hogy a kifejezésekben automatikusan a mutatott objektumot jelenti, nem
             pedig a címet.</para>
-        <para> </para>
-        
-    </section>        
-        
+        <para>Az öröklődés legegyszerűbb esete, amikor egy létező osztályt egy másik osztállyal
+            bővítünk ki. Ez jelentheti új műveletek vagy változók bevezetését. A már létező osztály
+            lesz a szülő osztály, amivel kibővítettük pedig a gyermek. A gyermek a benne megadott
+            tagokok kívül a szülő tagjaival is rendelkezni fog. Ezt nevezzük öröklődésnek. Azonban a
+            gyermek csak azokhoz a tagokhoz fér hozzá, amelyikhez a szülő engedi, viszont a gyermek
+            példányai rendelkeznek a szülő összes tagjával.</para>
+        <para>Mivel a gyermek őseinek minden változójával és metódusával a bír, minden olyan
+            környezetben használható, ahol ősei használhatók. Ezt nevezzül polimorfizmusnak.</para>
+        <para>Az osztályok rokonsági viszonyainak összességét osztályhierarchiának hívjuk. Az Object
+            osztályból származtatva fentről lefelé növő fa ként lehet elképzelni.</para>
+        <para>Absztrakt osztályok - megvalósítás(törzs) nélküli metódusokat megvalósító osztályok. A
+            Java nyelvben az abstract módosító jelöli az absztrakt osztályokat valamint metódusokat.
+            Ezek az osztályok nem példányosíthatók, nem lehet private, final, static vagy native
+            módosítóval ellátottak.</para>
+        <para>Final módosító - megakadályozza az előtaggal ellátott osztály
+            felüldefiniálását.</para>
+        <para>Interfészeknek az olyan osztályokat nevezzük, amelyek tartalmazhatnak absztrakt (törzs
+            nélküli) függvényeket. Az interfészek, mint egy külső felület engedik, hogy belőlük
+            származtatott osztályokból példányosított objektumokat egységesen kezeljük. Szintén
+            abstract kulcsszóval adjuk meg az absztrakt metódusokat. Az absztrakt osztályokat
+            példányosítani nem lehet. Helyette azt mondjuk, hogy megvalósít vagy implementál egy
+            absztrakt metódust, ha szülőjének egy absztrakt metódusát felüldefiniálja, azaz más
+            implementációt ad rá.</para>
+        <para>Az UML az egyetlen szabványos modellező nyelve az általános szoftverfejlesztésnek.
+            Leggyakoribb felhasználási területe az UML osztálydiagram. Nagyon jól szemlélteti a
+            programban található osztályokat, interfészeket és egyéb típusokat és köztük fennálló
+            kapcsolatot.</para>
+        <para> A java programok forráskódjában tetszőleges unicode karakterek használhatóak, mivel
+            ez több biten tárolja a karaktereket, mint például az ASCII és az EBCDIC, amelyek 8
+            biten tárolják őket. Ezeket használva nem lehetne alkalmazni a magyar ű és ő betűket.
+            Megfelelő alternatíva lehetne még a Latin-2 karakterkészlet, azonban az unicode sokkal
+            célszerűbb.</para>
+        <para>Tokenek -  lexikális egységek, amelyekből utasítások és kifejezések állíthatók
+            össze.</para>
+        <para>Tokenek lehetnek:<itemizedlist>
+                <listitem>
+                    <para>fehér-karakterek</para>
+                </listitem>
+                <listitem>
+                    <para>azonosítók - betűvel kezdődnek és betűvel vagy számmal
+                        folytatódnak;</para>
+                </listitem>
+                <listitem>
+                    <para>operátorok - szimbólumok, amelyek értékeken végeznek műveletet;</para>
+                </listitem>
+                <listitem>
+                    <para>literálok - egyszerű típusok inicializálásához használatosak;</para>
+                </listitem>
+                <listitem>
+                    <para>kulcsszavak - a rendszer által lefoglalt szavak, azonosítók nem
+                        lehetnek;</para>
+                </listitem>
+                <listitem>
+                    <para>punctuatorok (C++ esetén).</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Utasítás lehet:<itemizedlist>
+                <listitem>
+                    <para>deklaráció-utasítás - lokális változó létrehozását és tetszés szerinti
+                        inicializálást jelent;</para>
+                </listitem>
+                <listitem>
+                    <para>kifejezés-utasítás - ez lehet értékadás, metódushívás, ++ vagy --
+                        operátorokkal képzett kifejezések, példányosítás.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Közös bennük, hogy pontosvessző zárja le őket. Tetszés szerint válthatják
+            egymást.</para>
+        <para>Java-ban jelentős az eltérés primitív típusú változók és egyéb változók között. A nem
+            primitív változók objektumhivatkozásokat tartalmaznak, osztályként kell rájuk
+            tekinteni.</para>
+        <para>Java nyelv primitív típusai:<itemizedlist>
+                <listitem>
+                    <para>byte</para>
+                </listitem>
+                <listitem>
+                    <para>short</para>
+                </listitem>
+                <listitem>
+                    <para>int</para>
+                </listitem>
+                <listitem>
+                    <para>boolean</para>
+                </listitem>
+                <listitem>
+                    <para>char</para>
+                </listitem>
+                <listitem>
+                    <para>long</para>
+                </listitem>
+                <listitem>
+                    <para>float</para>
+                </listitem>
+                <listitem>
+                    <para>double</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>Konstans változó -  bármilyen típus lehet, létrehozáskor kezdőértékkel kell ellátni.
+            Egy fordítási egységen belül szabadon hivatkozhatunk más változókra. Ha nincs körkörös
+            hivatkozás, akkor a fordító biztosítja a helyes sorrendet.</para>
+        <para>Minden osztálynak van konstruktora, amik példányosítás során hajtódnak végre
+            automatikusan. Neve megegyezik az osztály nevével. Ez a metódus adja meg az objektum
+            kezdeti állapotát. A destruktor a konstruktor ellentéte. Az erőforrások
+            felszabadításához van rá szükség.</para>
+        <para>Operátor túlterhelés - az operátorok segítségével műveleteket lehet végezni az
+            egyszerű változókon. Ezeket az osztályok túl tudják tehelni, így saját működést
+            társítanak hozzá.</para>
+        <para>Indexer (indexelő) - ezek segítségével úgy indexelhetünk osztályokat, mint
+            tömböket.</para>
+        <para>Beágyazott osztályok - két osztály között lévő szoros kapcsolat kifejezésére
+            használjuk őket. Egy osztályt megadhatunk egy másik osztályon belül (beágyazás). A
+            beágyazott osztály a tartalmazó osztályon kívül nem létezhet.</para>
+        <para>Gyűjtemények - olyan eszközök, amelyek egy vagy több típusba tartozó objektumok
+            példányait a memóriában tárolja, manipulálja vagy lekérdezi. Ezek minden
+            programnyelveben megtalálhatóak (van néhány kivétel). Legjellemzőbb fajtája a tömb és az
+            objektum referenciák vagy mutatók segítségével történő összekapcsolás. Java 2-vel került
+            be a nyelvbe.</para>
+        <para>Funkcionális nyelvek - dekleratív nyelvek, a program végrehajtását egy függvény
+            kiértékelésének tekinti. Egy kezdetleges funkcionális nyelv esetén nem lehet változókról
+            sem értékadásról beszélni. A függvénye csupán a bemeneti értékek alapján számítják ki a
+            megfelelő kimenetet.</para>
+        <para>Lambda kifejezés - az imperatív nyelvekbe átemelt legnépszerűbb funkcionális elem.
+            Lehetőséget ad inline függvények létrehozására. Rövid kódrészletek, általában
+            "egyszerhasználatosakt", tehát nincs értelme elnevezni őket. Ott írjuk meg őket, ahol
+            használni szeretnénk. </para>
+        <para>Java-ban minden adatfolyam típusnak egy osztály fog megfeleni.</para>
+        <para>Három féle képen lehet osztályozni őket:<itemizedlist>
+                <listitem>
+                    <para>adatfolyam típusa alapján - bájtfolyam, karakterfolyam;</para>
+                </listitem>
+                <listitem>
+                    <para>adatfolyam iránya alapján - bemeneti és kimeneti;</para>
+                </listitem>
+                <listitem>
+                    <para>feladatuk alapján - adatfolyam forrása valamint meglévő adatot
+                        kiegészítő.</para>
+                </listitem>
+            </itemizedlist></para>
+        <para>A fájlok manipulásához Java-ban nem az adatfolyamok alkalmatlanok sok esetben, mivel
+            nincs biztosítva egyidőben a fájlok olvasása és írása. A probléma megoldásáoz egy
+            közvetlen elérésű fáj (random acces file) segít. Legkönnyebben egy fájlrendszerben
+            tárolt bájttömbként képzelhető el, amelynek bármelyik pozíciójához olvashatunk és
+            írhatunk adatot. Minden ilyen objektumhoz tartozk egy fájlmutató. Ez egy pozíciót jelöl
+            a fájlban. Ettől a mutatótól kezdődnek a kiíró és beolvasó műveletek.</para>
+        <para>Szerializáció - az objektumok byte-sorozattá alakítását jelenti. Az adatok külső
+            tárolásában játszik fontos szerepet. Csak az az osztály szerilizálható, amelyik
+            megvalósítja a serilizable interfészt. Ha egy szerializálható, akkor a leszármazottai
+            is. </para>
+        <para>Kivételkezelés - mechanizmus, amely biztosítja, hogy hiba esetén a futás a hibakezelő
+            ágon folytatódjon. Bármilyen kivételes helyzet esetén használható.</para>
+        <para>Java exception - olyan kivételes esemény, amely hatására az utasítások normál
+            végrehajtási sorrendje megszakad. A Java kivételkezelés - ahogy minden más is -
+            osztályokon alapszik. Amikor egy kivétel keletkezik egy metódus futása közben, akkor egy
+            hiba objektum jön létre, ami tartalmazza a hiba tulajdonságait. A hiba kezelése után a
+            vezérlés nem tér vissza a hibát kiváltó részhez.</para>
+        <para>Annotációk és metaadatok - információt biztosítanak a programról, de nem részei annak,
+            nem befolyásolják a kód működését, amelyet annotálnak. Annotációval adhatunk információt
+            a fordítóprogram számára, amit például hibakeresésnél hasznosíthat. A Java 5-tel
+            kerültek be a nyelvbe. Egy annotációs típus lényegében egy speciális interfésztípus.
+            Nevét egy '@' jel előzi meg.</para>
+        <para>Egy paradigma jellemzi egy nyelv stíulást, fogalmait, eszközeit, képességeit. A
+            paradigmák általában egy adott területen használhatók, viszont kombinált feladatot
+            megoldására ezeket kombinálni kell. Az ilyen feladatokhoz használjuk a multiparadigmás
+            nyelveket.</para>
+        <para>Multiparadigmás programozási nyelv - olyan nyelv, amely kettő vagy több programozási
+            paradigmát támogat. Biztosítja, hogy a programozó különböző stílusokban tudjon dolgozni,
+            a paradigma elemeit szabadon kombinálja valamint, hogy lehetővé tegye a programozó
+            számára, hogy a legjobb eszközt használja egy probléma megoldására. Procedurális
+            paradigmát követnek, tehát lépésről lépésre írják le a probléma megoldását.</para>
+    </section>
     <section>
         <title>Bevezetés a mobilprogramozásba</title>
         <para> A Python egy általános célú programozási nyelv. Alkotója Guido van Rossum. Leginkább
@@ -143,189 +310,6 @@ except [kifejezés]: #akkor fut le,ha az történik, amit a try után leírtunk
 [else:
     utasítások]
 ]]></programlisting>
-    </section>        
-                
-    <section>
-        <title>Biomorfok</title>
-        <para>
-            Megoldás videó: <link xlink:href="https://youtu.be/IJMbgRzY76E">https://youtu.be/IJMbgRzY76E</link>
-        </para>
-        <para>
-            Megoldás forrása: <link xlink:href="https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf">https://gitlab.com/nbatfai/bhax/tree/master/attention_raising/Biomorf</link>
-        </para>
-        <para>
-            A biomorfok szoros kapcsolatban állnak a Mandelbrot halmazzal. Itt is létrehozunk egy make file-t és futtatjuk a programot, ami létrehoz egy bmorf.png képet az előzőhöz hasonló módon, de mivel az egyenletünk más ebből egyértelműen következik, hogy a kapott ábra is másogy fog kinézni. A formán kívül azonban az is szembeötlik, hogy ez az ábra már színes. Ezt úgy kapjuk meg, hogy az iteráció számát elosztjuk 255-tel, így RGB színezést kapunk.
-        </para>
-        <para>Kimenet: <link xlink:href="https://github.com/mesterakos963/Prog1/blob/master/bmorf.png">https://github.com/mesterakos963/Prog1/blob/master/bmorf.png</link></para>                        
-    </section>                     
-
-    <section>
-        <title>A Mandelbrot halmaz CUDA megvalósítása</title>
-        <para>
-            Megoldás videó: 
-        </para>
-        <para>
-            Megoldás forrása:  
-        </para>
-    </section>                     
-
-    <section>
-        <title>Mandelbrot nagyító és utazó C++ nyelven</title>
-        <para>
-            Építs GUI-t a Mandelbrot algoritmusra, lehessen egérrel nagyítani egy területet, illetve egy pontot
-            egérrel kiválasztva vizualizálja onnan a komplex iteréció bejárta z<subscript>n</subscript> komplex számokat!
-        </para>  
-        <para>
-            Megoldás forrása:  
-        </para>
-        <programlisting language="c++">
-<![CDATA[
-        // frakablak.cpp
-//
-// Mandelbrot halmaz nagyító
-
-#include "frakablak.h"
-
-FrakAblak::FrakAblak(double a, double b, double c, double d,
-                     int szelesseg, int iteraciosHatar, QWidget *parent)
-                         : QMainWindow(parent)
-{
-    setWindowTitle("Mandelbrot halmaz");
-
-    szamitasFut = true;
-    x = y = mx = my = 0;
-    this->a = a;
-    this->b = b;
-    this->c = c;
-    this->d = d;
-    this->szelesseg = szelesseg;
-    this->iteraciosHatar = iteraciosHatar;
-    magassag = (int)(szelesseg * ((d-c)/(b-a)));
-
-    setFixedSize(QSize(szelesseg, magassag));
-    fraktal= new QImage(szelesseg, magassag, QImage::Format_RGB32);
-
-    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
-    mandelbrot->start();
-}
-
-FrakAblak::~FrakAblak()
-{
-    delete fraktal;
-    delete mandelbrot;
-}
-
-void FrakAblak::paintEvent(QPaintEvent*) {
-    QPainter qpainter(this);
-    qpainter.drawImage(0, 0, *fraktal);
-    if(!szamitasFut) {
-        qpainter.setPen(QPen(Qt::white, 1));
-        qpainter.drawRect(x, y, mx, my);
-
-    }
-    qpainter.end();
-}
-
-void FrakAblak::mousePressEvent(QMouseEvent* event) {
-
-    // A nagyítandó kijelölt területet bal felsõ sarka:
-    x = event->x();
-    y = event->y();
-    mx = 0;
-    my = 0;
-
-    update();
-}
-
-void FrakAblak::mouseMoveEvent(QMouseEvent* event) {
-
-    // A nagyítandó kijelölt terület szélessége és magassága:
-    mx = event->x() - x;
-    my = mx; // négyzet alakú
-
-    update();
-}
-
-void FrakAblak::mouseReleaseEvent(QMouseEvent* event) {
-
-    if(szamitasFut)
-        return;
-
-    szamitasFut = true;
-
-    double dx = (b-a)/szelesseg;
-    double dy = (d-c)/magassag;
-
-    double a = this->a+x*dx;
-    double b = this->a+x*dx+mx*dx;
-    double c = this->d-y*dy-my*dy;
-    double d = this->d-y*dy;
-
-    this->a = a;
-    this->b = b;
-    this->c = c;
-    this->d = d;
-
-    delete mandelbrot;
-    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
-    mandelbrot->start();
-
-    update();
-}
-
-void FrakAblak::keyPressEvent(QKeyEvent *event)
-{
-
-    if(szamitasFut)
-        return;
-
-    if (event->key() == Qt::Key_N)
-        iteraciosHatar *= 2;
-    szamitasFut = true;
-
-    delete mandelbrot;
-    mandelbrot = new FrakSzal(a, b, c, d, szelesseg, magassag, iteraciosHatar, this);
-    mandelbrot->start();
-
-}
-
-
-void FrakAblak::vissza(int magassag, int *sor, int meret)
-{
-    for(int i=0; i<meret; ++i) {
-        QRgb szin = qRgb(0, 255-sor[i], 0);
-        fraktal->setPixel(i, magassag, szin);
-    }
-    update();
-}
-
-void FrakAblak::vissza(void)
-{
-    szamitasFut = false;
-    x = y = mx = my = 0;
-}
-]]>
-</programlisting>
-<para>
-    Ehhez a feladathoz a QT Creator nevű progamot használjuk, mely egy multiplatform GUI építő szoftver.
-</para>
-        <para>
-            A már meglévő Mandelbrot-halmaz kódhoz építünk felhasználói felületet. Használatához kijelöljük az újragenerálandó területet, ezzel érjük el a nagyítást.
-        </para>
-        <para>
-            A szükséges kiegészítő kódok itt találhatóak: <link xlink:href="https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/">https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/</link>
-        </para>
-    </section>                     
-                                                                                                                                                                               
-    <section>
-        <title>Mandelbrot nagyító és utazó Java nyelven</title>
-        <para>
-            Ehhez a feladathoz az OpenJFX 11 nevű szoftvert használni, ami a QT-hoz hasonló GUI építő szoftver.  
-        </para>
-        <para>
-            A Mandelbrot nagyító és utazó JAVA nyelvű megvalósítása itt található: <link xlink:href="https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/">https://sourceforge.net/p/udprog/code/ci/master/tree/source/labor/Qt/Frak/</link>
-        </para>
     </section>
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
 </chapter>                
 

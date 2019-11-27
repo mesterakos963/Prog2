@@ -23,7 +23,7 @@
         </xi:fallback>
     </xi:include>     
 
-<xi:include href="bhax-textbook-feladatok-arroway.xml">
+    <xi:include href="bhax-textbook-feladatok-liskov.xml">
         <xi:fallback>
             <para>
                 <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
@@ -31,7 +31,7 @@
         </xi:fallback>
     </xi:include>
 
-<xi:include href="bhax-textbook-feladatok-liskov.xml">
+    <xi:include href="bhax-textbook-feladatok-mandelbrot.xml">
         <xi:fallback>
             <para>
                 <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
@@ -39,23 +39,7 @@
         </xi:fallback>
     </xi:include>
 
-<xi:include href="bhax-textbook-feladatok2-mandelbrot.xml">
-        <xi:fallback>
-            <para>
-                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
-            </para>
-        </xi:fallback>
-    </xi:include>      
-    
-<xi:include href="bhax-textbook-feladatok2-chomsky.xml">
-        <xi:fallback>
-            <para>
-                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
-            </para>
-        </xi:fallback>
-    </xi:include>
-    
-<xi:include href="bhax-textbook-feladatok2-stroustrup.xml">
+    <xi:include href="bhax-textbook-feladatok2-chomsky.xml">
         <xi:fallback>
             <para>
                 <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
@@ -63,35 +47,46 @@
         </xi:fallback>
     </xi:include>
 
-<xi:include href="bhax-textbook-feladatok2-godel.xml">
-        <xi:fallback>
-            <para>
-                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
-            </para>
-	</xi:fallback>
-    </xi:include>
-            
-<xi:include href="bhax-textbook-feladatok2-hello.xml">
-        <xi:fallback>
-            <para>
-                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
-
-<xi:include href="bhax-textbook-feladatok2-lauda.xml">
+    <xi:include href="bhax-textbook-feladatok2-stroustrup.xml">
         <xi:fallback>
             <para>
                 <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
             </para>
         </xi:fallback>
     </xi:include>
-            </para>
-	</xi:fallback>
-    </xi:include>
 
-<xi:include href="bhax-textbook-feladatok2-calvin.xml">
+    <xi:include href="bhax-textbook-feladatok2-godel.xml">
         <xi:fallback>
             <para>
                 <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
             </para>
-	</xi:fallback>
+        </xi:fallback>
     </xi:include>
+
+    <xi:include href="bhax-textbook-feladatok2-hello.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+
+    <xi:include href="bhax-textbook-feladatok2-lauda.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+
+    <xi:include href="bhax-textbook-feladatok2-calvin.xml">
+        <xi:fallback>
+            <para>
+                <emphasis>XInclude: bhax-textbook-motto.xml file not found</emphasis>
+            </para>
+        </xi:fallback>
+    </xi:include>
+
+
+
 </part>  

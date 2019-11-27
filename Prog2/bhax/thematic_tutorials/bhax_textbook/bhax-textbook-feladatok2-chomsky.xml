@@ -35,11 +35,6 @@
             </inlinemediaobject></para>
         <para>Most, hogy van egy futó programunk haladunk tovább a feladattal, azaz először a
             Mandelbrot iterációkat fordítjuk le.</para>
-        <para><inlinemediaobject>
-                <imageobject>
-                    <imagedata fileref="../../../HelloChomsky/iteraciokkal.jpg"/>
-                </imageobject>
-            </inlinemediaobject></para>
         <para>Nagyítás:</para>
         <para><inlinemediaobject>
                 <imageobject>
@@ -154,6 +149,12 @@ m_guided = true;
 m_cmd = 2;
 }
 . {;}</programlisting>
+        <para>Futás:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/oocwckesz.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
     </section>
     <section>
         <title>l334d1c4</title>

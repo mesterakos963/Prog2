@@ -135,6 +135,12 @@ void SamuCam::run()
             tudunk felismerni, amik a mi esetünkben arcok lesznek. Az eredményt egy vektorban
             tárolja négyzetek formájában. Az első felismert objektumot kiolvassuk, képpé alakítjuk,
             majd jelezzük, hogy megváltozott a kamera képe.</para>
+        <para>Futás közben:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/samucam.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
     </section>
     <section>
         <title>BrainB</title>
@@ -194,6 +200,14 @@ sudo apt-get install libopencv-dev</programlisting></para>
             slottal.<programlisting>connect ( brainBThread, SIGNAL ( heroesChanged ( QImage, int, int ) ←-
     ),
         this, SLOT ( updateHeroes ( QImage, int, int ) ) );</programlisting></para>
+        <para>Futás közben:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata
+                        fileref="../../../../K%C3%A9pek/K%C3%A9perny%C5%91k%C3%A9p%20err%C5%91l:%202019-11-27%2020-17-35.png"
+                    />
+                </imageobject>
+            </inlinemediaobject></para>
     </section>
     <section>
         <title>FUTURE tevékenység editor</title>

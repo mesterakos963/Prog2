@@ -15,12 +15,126 @@
             nélkül fog futni. Tanítás után először a W_0 súlyokat ábrázolja. Ez adja meg 0
             valószínűségét. A kapott ábra fogja mutatni, hogy a program milyennek "képzeli el" vagy
             milyennek "tanulta meg" a 0  számjegyet.</para>
-        <para><inlinemediaobject>
-                <imageobject>
-                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/nulla.jpg"/>
-                </imageobject>
-            </inlinemediaobject></para>
-        <para>Ezután felismertetjük vele a tesztképeket:</para>
+        <para>Az MNIST olyan adatbázissal dolgozik, ami 60 000 képet tartalmaz. A pontosság
+            meghatározásához 10 000 képet
+            használunk.<programlisting>
+    from __future__ import absolute_import
+    from __future__ import division
+    from __future__ import print_function
+
+    import argparse
+
+    # Import data
+    from tensorflow.examples.tutorials.mnist import input_data
+
+    import tensorflow as tf
+    old_v = tf.logging.get_verbosity()
+    tf.logging.set_verbosity(tf.logging.ERROR)
+
+    import matplotlib.pyplot
+
+    FLAGS = None
+
+    def main(_):
+        mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
+        # Create the model
+        x = tf.placeholder(tf.float32, [None, 784])
+        W = tf.Variable(tf.zeros([784, 10]))
+        b = tf.Variable(tf.zeros([10]))
+        y = tf.matmul(x, W) + b</programlisting></para>
+        <para>Az MNIST adatbázis behívását és eltárolását követően kezdjük el inicializálni a
+            Tensorflow könyvtárat.</para>
+        <para>Ahogy a Perceptron feladatban is, itt is egy neurális hálózatot használunk. Ennek
+            rétegeit a felhasználás szerint kell beállítani. A rétegek az inputból információt
+            nyernek ki.</para>
+        <para>Beállítunk néhány változót:<itemizedlist>
+                <listitem>
+                    <para>x - egy tenzor, ebbe fogjuk küldeni az értékeket, megadjuk neki, hogy 784
+                        pixelt tartalmazó képeket fog kapni;</para>
+                </listitem>
+                <listitem>
+                    <para>w - súly;</para>
+                </listitem>
+                <listitem>
+                    <para>b - bias;</para>
+                </listitem>
+                <listitem>
+                    <para>y - egy függvény (tf.placeholder) kiértékelése utáni értéket tárolunk
+                        benne, szükségesek hozzá a 'w' és 'y' változók.</para>
+                </listitem>
+            </itemizedlist></para>
+        <programlisting>
+    y_ = tf.placeholder(tf.float32, [None, 10])
+    cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits( ←-
+        labels = y_, logits = y))
+    train_step = tf.train.GradientDescentOptimizer(0.5).minimize( ←-
+        cross_entropy)
+</programlisting>
+        <para>cross_entropy - függvény, ami az eredeti és a becsült érték közötti különbséget adja
+            meg, a mi célunk ennek az értéknek a minimalizálása.</para>
+        <programlisting>    sess = tf.InteractiveSession()
+    # Train
+    tf.initialize_all_variables().run(session=sess)
+    print("-- A halozat tanitasa")
+    for i in range(1000):
+    batch_xs, batch_ys = mnist.train.next_batch(100)
+    sess.run(train_step, feed_dict={x: batch_xs, y_: batch_ys})
+    if i % 100 == 0:
+    print(i/10, "%")
+    print("----------------------------------------------------------")</programlisting>
+        <para>A tanítás folyamata lépésekben történik. Ehhez egy beépített
+            "GradientDescentOptimizer" nevű függvényt használunk. Ez egy kezdeti értéket frissít
+            addig, amíg a "cost" függvény nem éri el a minimumot.</para>
+        <para>Az alábbi programrészben elindítjuk a folyamatot, az adatot feldaraboljuk. A
+            pontosságot kiiratjuk a standard
+            kimenetre.<programlisting>    # Test trained model
+    print("-- A halozat tesztelese")
+    correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+    print("-- Pontossag: ", sess.run(accuracy, feed_dict={x: mnist.test. ←-
+    images,
+                                                            y_: mnist.test.labels}))
+    print("----------------------------------------------------------")
+    print("-- A MNIST 42. tesztkepenek felismerese, mutatom a szamot, a ←-
+        tovabblepeshez csukd be az ablakat")
+    img = mnist.test.images[42]
+    image = img
+
+    matplotlib.pyplot.imshow(image.reshape(28, 28), cmap=matplotlib.pyplot.cm ←-
+        .binary)
+    matplotlib.pyplot.savefig("4.png")
+    matplotlib.pyplot.show()
+
+    classification = sess.run(tf.argmax(y, 1), feed_dict={x: [image]})
+
+    print("-- Ezt a halozat ennek ismeri fel: ", classification[0])
+    print("----------------------------------------------------------")
+    
+    print("-- A MNIST 11. tesztkepenek felismerese, mutatom a szamot, a ←-
+        tovabblepeshez csukd be az ablakat")
+
+    img = mnist.test.images[11]
+    image = img
+    matplotlib.pyplot.imshow(image.reshape(28,28), cmap=matplotlib.pyplot.cm. ←-
+        binary)
+    matplotlib.pyplot.savefig("8.png")
+    matplotlib.pyplot.show()
+
+    classification = sess.run(tf.argmax(y, 1), feed_dict={x: [image]})
+
+    print("-- Ezt a halozat ennek ismeri fel: ", classification[0])
+    print("----------------------------------------------------------")
+
+    if __name__ == ’__main__’:
+        parser = argparse.ArgumentParser()
+        parser.add_argument(’--data_dir’, type=str, default=’/tmp/tensorflow/ ←-
+            mnist/input_data’,
+                             help=’Directory for storing input data’)
+        FLAGS = parser.parse_args()
+        tf.app.run()</programlisting></para>
+        <para>Elkészült a hálózat. Lehet tesztelni az MNIST adatbázis képeivel, aztán ahogy a
+            feladat is kérte egy általunk rajzolt számmal.</para>
+        <para>MNIST adatbázis képe:</para>
         <para><inlinemediaobject>
                 <imageobject>
                     <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/mnist4es1.jpg"/>
@@ -66,10 +180,67 @@
             </inlinemediaobject></para>
         <para>A hosszú futásidő oka az iterációk számában keresendő. 1000 helyett most 20.000
             iterációt használunk illetve bonyolultabb modellt. Hogy ne kelljen a tanítási időre
-            várni a tanítási állapot
-            kimenthető.<programlisting>    saver = tf.train.Saver()
-    saver.save(sess, "./model/model.ckpt")</programlisting></para>
-        <para>Minden változó értékét kimentjük az adott fájlba (model.ckpt).</para>
+            várni a tanítási állapot kimenthető.</para>
+        <programlisting>for i in range(20000):
+    batch = mnist.train.next_batch(50)
+    if i % 100 == 0:
+        train_accuracy = accuracy.eval(feed_dict={
+            x: batch[0], y_: batch[1], keep_prob: 1.0})
+        print(’step %d, training accuracy %g’ % (i, train_accuracy))
+        train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})</programlisting>
+        <para>Minden változó értékét kimentjük.. Ezt a save függvénnyel érjük el, ami minden
+            változót kiment egy adott fájlba (model.ckpt).</para>
+        <para>
+            <programlisting>    saver = tf.train.Saver()
+    saver.save(sess, "./model/model.ckpt")</programlisting>
+        </para>
+        <para>Tanár úr diasorából az ábra:</para>
+        <para><inlinemediaobject>
+                <imageobject>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/batfaidia.jpg"/>
+                </imageobject>
+            </inlinemediaobject></para>
+        <para>Jól szemlélteti a modell bonyolultságát.</para>
+        <para>Egy pár szót a forrásról:</para>
+        <para>Az első réteg a 28x28-as kép. Az első konvolúciós réteget így kapjuk
+            meg:<programlisting>    with tf.name_scope('conv1'):
+        W_conv1 = weight_variable([5, 5, 1, 32])
+        b_conv1 = bias_variable([32])
+        h_conv1 = tf.nn.relu(conv2d(x_image, W_conv1) + b_conv1)</programlisting></para>
+        <para>weight_variable - megadott alakú változót ad vissza.</para>
+        <para>bias_variable - 0 vagy 1 értéket ad vissza.</para>
+        <para>conv2d - kettő 4 dimenziós paraméternek számolja ki a 2 dimenziós konvolúcióját
+            (paraméterek: input, szűrő).</para>
+        <para>A max_pool függvény maximum poolozást hajt végre. Az input tensor 2. és 3.
+            dimenziójához képest a kimenet mérete a felére csökken. Ezután jön mégegy konvolúciós
+            réteg és egy
+            poolozás.<programlisting>    with tf.name_scope(’conv2’):
+        W_conv2 = weight_variable([5, 5, 32, 64])
+        b_conv2 = bias_variable([64])
+        h_conv2 = tf.nn.relu(conv2d(h_pool1, W_conv2) + b_conv2)
+
+    with tf.name_scope(’pool2’):
+        h_pool2 = max_pool_2x2(h_conv2)</programlisting></para>
+        <para>Ezt követően megcsináljuk az első fully connected
+            réteget:<programlisting>    with tf.name_scope(’fc1’):
+        W_fc1 = weight_variable([7 * 7 * 64, 1024])
+        b_fc1 = bias_variable([1024])
+
+        h_pool2_flat = tf.reshape(h_pool2, [-1, 7*7*64])
+        h_fc1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_fc1) + b_fc1)</programlisting></para>
+        <para>Átalakítjuk a pool2-t, új súlyokat és biasokat vezetünk be. Az átadott keep_prob érték
+            ezután jelenik
+            meg.<programlisting>    with tf.name_scope(’dropout’):
+        keep_prob = tf.placeholder(tf.float32)
+        h_fc1_drop = tf.nn.dropout(h_fc1, keep_prob)</programlisting></para>
+        <para>Ezután 10 értékre leképezzük a súlyokat és
+            biasokat:<programlisting>    with tf.name_scope(’fc2’):
+        W_fc2 = weight_variable([1024, 10])
+        b_fc2 = bias_variable([10])
+
+        y_conv = tf.matmul(h_fc1_drop, W_fc2) + b_fc2
+    return y_conv, keep_prob</programlisting></para>
+        <para>A súlyok és biasok értéke tanulás közben állítódik be.</para>
     </section>
     <section>
         <title>Androig telefonra a TF objektum detektálója</title>
@@ -78,7 +249,7 @@
         <para><link
                 xlink:href="https://github.com/tensorflow/tensorflow/tree/master/tensorflow/examples/android"
             /></para>
-        <para>Ebből android studióban csinálunk egy apk-t és telepítjük telefonra.</para>
+        <para>Ebből Android studióban csinálunk egy apk-t és telepítjük telefonra.</para>
         <para>Itt van 2 kép használat közben:</para>
         <para><inlinemediaobject>
                 <imageobject>
@@ -106,11 +277,32 @@
             helyett most tárgyakat, élőlényeket kell felismertetni a programunkkal. A képek mostmár
             RGB-sek illetve a felbontásuk 28x28-ról 32x32-re nő. Az adatbázisban alapból 10 dologról
             találhatóak képek.</para>
+        <para>Ahhoz, hogy saját képet is fel tudjunk ismertetni, először szükségünk van egy
+            programra, ami kompatibilissé fogja tenni és átalakítja azt bináris
+            formára.<programlisting>from PIL import Image
+import numpy as np
+import sys
+
+im = Image.open(sys.argv[1])
+im = (np.array(im))
+
+r = im[:,:,0].flatten()
+g = im[:,:,1].flatten()
+b = im[:,:,2].flatten()
+label = [0]
+
+out = np.array(list(label) + list(r) + list(g) + list(b),np.uint8)
+out.tofile("./cifar10_data/cifar-10-batches-bin/" + sys.argv[2])</programlisting></para>
+        <para>Paraméternek megadjuk neki a kép nevét. A kép RGB komponenseit eltárolja egy
+            tömbbe.</para>
         <programlisting>    train_X = train_X.reshape(-1,32,32,3)
     test_X = test_X.reshape(-1,32,32,3)</programlisting>
         <para>Amint láthatjuk az előző feladathoz képest a paraméterek megváltoztak: a képek mérete,
             amint azt az előb is írtam, az utolsó paraméter (3) pedig azt adja meg, hogy most RGB
             képekkel fogunk dolgozni.</para>
+        <para>Néhány módosítást kell végrehajtani a kódon. Például az eredeti "test_batch.bin"
+            helyett "input.bin"-t kell használnunk. A cifar10.py-ban a "batch_size" értékét 1-re
+            kell állítani, mivel 1 db képet kell felismertetnünk vele.</para>
         <para>Több neuront használunk fel és változnak az input_shape függvény paraméterei
             is.<programlisting>    cifar_classes = [’airplane’, ’automobile’, ’bird’, ’cat’, ’deer’, ’ ←-
     dog’, ’frog’, ’horse’, ’ship’, ’truck’]</programlisting></para>
