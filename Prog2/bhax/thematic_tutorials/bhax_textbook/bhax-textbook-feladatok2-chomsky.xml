@@ -152,7 +152,7 @@ m_cmd = 2;
         <para>Futás:</para>
         <para><inlinemediaobject>
                 <imageobject>
-                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/oocwckesz.jpg"/>
+                    <imagedata fileref="../../../../Let%C3%B6lt%C3%A9sek/oocwc1.jpg"/>
                 </imageobject>
             </inlinemediaobject></para>
     </section>
@@ -192,11 +192,19 @@ import java.util.*;</programlisting></para>
 			
 			while (tokens.hasNext()) {
 				String token = tokens.next();
-				token = token.replace("a", "4");
+                          token = token.replace("a", "4");
 				token = token.replace("o", "0");
 				token = token.replace("l", "1");
 				token = token.replace("e", "3");
 				token = token.replace("t", "7");
+				token = token.replace("d", "|)");
+				token = token.replace("b", "8");
+				token = token.replace("c", "&lt;");
+				token = token.replace("m", "(V)");
+				token = token.replace("r", "|2");
+				token = token.replace("u", "|_|");
+				token = token.replace("x", ">&lt;");
+				
 				if (token.endsWith("s")) {
 					token = token.substring(0, token.length() - 1) + "Z";
 				}
@@ -225,15 +233,86 @@ import java.util.*;</programlisting></para>
             ábrázoló képet). Ez lesz a többrétegű neurális háló bemenete.</para>
         <para>Mivel többrétegű perceptront akarunk létrehozni, ezért csatolnunk kell az mlp és a
             png++/png könyvtárakat, valamint utóbbi könyvtár a png-kel való munkát teszi
-            lehetővé.</para>
+            lehetővé.<programlisting>#include &lt;iostream>
+#include &lt;time.h>
+#include "mlp.hpp"
+#include &lt;png++/png.hpp>
+
+using namespace std;</programlisting></para>
         <para>A main függvényben adjuk meg, hogy az első argumentumban szereplő állományt szeretnénk
-            olvasni. Meghatározzuk a kép méretét valamint ezeket az értékeket el is tároljuk.
-            Létrehozunk egy példányt a perceptron osztályból, melynek argumentumai a rétegek száma,
-            az első és a második réteg neuronjai az inputrétegben. Ezután két for ciklussal
-            végigmegyünk a képen vízszintesen és függőlegesen. A vörös színkomponenst az image-ben
-            tároljuk. A value egy double típusú értéket tárol. Ezt az értéket a percetron image-re
-            történő meghívása adja majd meg. Kiírjuk az értéket, majd a memória felszabadítása
-            végett töröljük a már használni nem kívánt értékeket.</para>
+            olvasni. Meghatározzuk a kép méretét valamint ezeket az értékeket el is tároljuk.</para>
+        <para>
+            <programlisting>
+
+int main(int argc, char **argv)
+{
+
+	srand(time(NULL));
+
+	png::image &lt;png::rgb_pixel> png_image(argv[1]);
+
+	int size = png_image.get_width()*png_image.get_height();
+
+	Perceptron *p = new Perceptron(3, size, 256, 1);</programlisting>
+        </para>
+        <para>Létrehozunk egy példányt a perceptron osztályból, melynek argumentumai a rétegek
+            száma, az első és a második réteg neuronjai az inputrétegben.</para>
+        <para>
+            <programlisting>
+
+	double* image_red = new double[size];
+	double* image_green = new double[size];
+	double* image_blue = new double[size];
+</programlisting>
+        </para>
+        <para> Ezután két for ciklussal végigmegyünk a képen vízszintesen és függőlegesen. A vörös
+            színkomponenst az image-ben tároljuk. </para>
+        <para>
+            <programlisting>
+	for(int i=0; i&lt;png_image.get_width(); ++i)
+	{
+		for(int j=0; j&lt;png_image.get_height(); ++j)
+		{
+			image_red[i*png_image.get_width()+j] = png_image[i][j].red;
+			image_green[i*png_image.get_width()+j] = png_image[i][j].green;
+			image_blue[i*png_image.get_width()+j] = png_image[i][j].blue;
+		}
+	}
+
+	png::image&lt;png::rgb_pixel> image(png_image.get_height(), png_image.get_width());
+
+	for(png::uint_32 y = 0; y&lt;image.get_height(); ++y)
+	{
+		for(png::uint_32 x = 0; y&lt;image.get_width(); ++x)
+		{
+			image[y][x] = png::rgb_pixel(image_red [y* image.get_width()+x],
+			image_green [y*image.get_width()+x], image_blue[y*image.get_width+x]);
+		}
+	}
+
+	image.write("rgb.png");
+</programlisting>
+        </para>
+        <para>A value egy double típusú értéket tárol. Ezt az értéket a percetron image-re történő
+            meghívása adja majd meg. Kiírjuk az értéket, majd a memória felszabadítása végett
+            töröljük a már használni nem kívánt értékeket.</para>
+        <para>
+            <programlisting>
+	double value = (*p)(image_red);
+
+	cout&lt;&lt;value;
+
+	png::image &lt;png::rgb_pixel> png_res ((*p)(png_image));
+	png_res.write("kimeneti.png");
+
+	delete p;
+	delete image_red;
+	delete image_green;
+	delete image_blue;
+	return 0;
+}
+</programlisting>
+        </para>
         <para>  Fordítás, futtatás:</para>
         <para><inlinemediaobject>
                 <imageobject>

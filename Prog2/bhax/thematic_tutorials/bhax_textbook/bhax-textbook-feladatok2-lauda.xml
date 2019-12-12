@@ -44,6 +44,23 @@ public class KapuSzkenner {
             "IOException" kivételt dob. Ha a programunk hibát ad vissza, akkor a terminálba kiírjuk,
             hogy az adott port nem figyelt. Kivételkezelés nélkül is tudjuk lefordítani a
             programot.</para>
+        <para>4 féle hibát kaphatunk:<itemizedlist>
+                <listitem>
+                    <para>UnkownHostException - ha nincs  meghatározott host az adott IP
+                        címre;</para>
+                </listitem>
+                <listitem>
+                    <para>IOException - ha nem sikerül létrehozni a socket objektumot;</para>
+                </listitem>
+                <listitem>
+                    <para>SecurityException - ha a Socket.checkConnect metódus nem engedélyez
+                        különböző műveleteket;</para>
+                </listitem>
+                <listitem>
+                    <para>IllegalArgumentException - ha a portszám a meghatározott intervallumon
+                        kívülre esik (0-65535).</para>
+                </listitem>
+            </itemizedlist></para>
         
     </section>
     <section>

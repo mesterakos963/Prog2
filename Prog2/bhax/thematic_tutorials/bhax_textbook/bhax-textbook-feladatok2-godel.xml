@@ -184,7 +184,9 @@ return 0;
             eredményt. Normál tabellánál a leggyengébb csapat elleni győzelem úgyanúgy 3 pontot ér,
             mint a legerősebb elleni. Az alternatív tabella erre kínál alternatív megoldást.</para>
         <para>A Java Comparable interfészt a felhasználó által megadott típusok rendezésére
-            használjuk. </para>
+            használjuk. A java.lang csomag tartalmazza. Egyetlen metódus van benne, a neve
+            compareTo(Object). Egy rendező algoritmus, ami az elemeket egyetlen adattag alapján
+            rendezi, a mi esetünkben (ahogy a kódból is látszik) ez a csapat lesz.</para>
         <para>T --> az objektum típusa, amihez hasonlítani szeretnénk az interfészt implementáló
             objektumot. Ez a java.lang csomagban található meg és csupán a compareTo(Object)
             metódust tartalmazza.</para>
